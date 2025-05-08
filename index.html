@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Clemente's Clock 🎉</title>
+  <title>Clemente's Clock🎉</title>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     body {
@@ -16,6 +16,7 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
+      position: relative;
     }
 
     .clock {
@@ -43,6 +44,71 @@
     .message.show {
       opacity: 1;
     }
+
+    .config-icon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 2rem;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      z-index: 10;
+    }
+
+    .config-icon:hover {
+      transform: rotate(30deg);
+    }
+
+    .settings-panel {
+      position: absolute;
+      top: 70px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      border-radius: 15px;
+      display: none;
+      flex-direction: column;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      z-index: 9;
+    }
+
+    .settings {
+      font-size: 1rem;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .settings input {
+      font-size: 1rem;
+      padding: 5px;
+      width: 60px;
+      text-align: center;
+      background: #1a1a1a;
+      border: 1px solid #444;
+      color: white;
+      border-radius: 5px;
+    }
+
+    .settings button {
+      padding: 5px 10px;
+      background-color: #4caf50;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .settings button:hover {
+      background-color: #45a049;
+    }
+
+    .current-time {
+      margin-top: 10px;
+      font-size: 1.2rem;
+      color: #aaa;
+    }
   </style>
 </head>
 <body>
@@ -50,16 +116,67 @@
   <div class="countdown" id="countdown">Calculando tiempo restante...</div>
   <div class="message" id="message">🎉 ¡Hora de irse! 🎉</div>
 
+  <div class="config-icon" onclick="toggleSettings()">⚙️</div>
+
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings">
+      <label>Hora mágica:</label>
+      <input type="number" id="setHour" min="0" max="23" />
+      <input type="number" id="setMinute" min="0" max="59" />
+      <input type="number" id="setSecond" min="0" max="59" />
+      <button onclick="saveCustomTime()">Guardar</button>
+    </div>
+    <div class="current-time" id="currentTimeText"></div>
+  </div>
+
   <script>
     const clockEl = document.getElementById("clock");
     const countdownEl = document.getElementById("countdown");
     const messageEl = document.getElementById("message");
+    const currentTimeText = document.getElementById("currentTimeText");
 
-    const targetHour = 13;
-    const targetMinute = 39;
-    const targetSecond = 50;
+    const setHourInput = document.getElementById("setHour");
+    const setMinuteInput = document.getElementById("setMinute");
+    const setSecondInput = document.getElementById("setSecond");
+    const settingsPanel = document.getElementById("settingsPanel");
 
     let confettiActive = false;
+
+    let targetHour = 13;
+    let targetMinute = 39;
+    let targetSecond = 50;
+
+    function loadCustomTime() {
+      const saved = JSON.parse(localStorage.getItem("horaMagica"));
+      if (saved) {
+        targetHour = saved.hour;
+        targetMinute = saved.minute;
+        targetSecond = saved.second;
+      }
+      setHourInput.value = targetHour;
+      setMinuteInput.value = targetMinute;
+      setSecondInput.value = targetSecond;
+      updateCurrentTimeText();
+    }
+
+    function saveCustomTime() {
+      targetHour = parseInt(setHourInput.value, 10);
+      targetMinute = parseInt(setMinuteInput.value, 10);
+      targetSecond = parseInt(setSecondInput.value, 10);
+
+      localStorage.setItem("horaMagica", JSON.stringify({
+        hour: targetHour,
+        minute: targetMinute,
+        second: targetSecond
+      }));
+
+      updateCurrentTimeText();
+      settingsPanel.style.display = "none";
+    }
+
+    function updateCurrentTimeText() {
+      currentTimeText.textContent = `⏰ Hora mágica actual: ${String(targetHour).padStart(2, '0')}:${String(targetMinute).padStart(2, '0')}:${String(targetSecond).padStart(2, '0')}`;
+    }
 
     function updateClock() {
       const now = new Date();
@@ -85,9 +202,7 @@
     function updateCountdown(now) {
       const target = new Date();
       target.setHours(targetHour, targetMinute, targetSecond, 0);
-      if (now > target) {
-        target.setDate(target.getDate() + 1); // siguiente día
-      }
+      if (now > target) target.setDate(target.getDate() + 1);
       const diff = target - now;
 
       const hours = String(Math.floor(diff / 1000 / 60 / 60)).padStart(2, '0');
@@ -102,7 +217,7 @@
       setTimeout(() => {
         messageEl.classList.remove("show");
         confettiActive = false;
-      }, 10000); // quitar después de 10s
+      }, 10000);
     }
 
     function launchConfetti() {
@@ -111,16 +226,16 @@
 
       (function frame() {
         confetti({
-          particleCount: 5,
+          particleCount: 7,
           angle: 60,
-          spread: 55,
-          origin: { x: 0 },
+          spread: 60,
+          origin: { x: 0 }
         });
         confetti({
-          particleCount: 5,
+          particleCount: 7,
           angle: 120,
-          spread: 55,
-          origin: { x: 1 },
+          spread: 60,
+          origin: { x: 1 }
         });
 
         if (Date.now() < end) {
@@ -129,6 +244,11 @@
       })();
     }
 
+    function toggleSettings() {
+      settingsPanel.style.display = settingsPanel.style.display === "flex" ? "none" : "flex";
+    }
+
+    loadCustomTime();
     setInterval(updateClock, 1000);
     updateClock();
   </script>
