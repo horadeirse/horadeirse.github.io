@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Clemente's Clock</title>
+  <title>Clemente's Clock 🎉</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     body {
       margin: 0;
@@ -18,28 +19,47 @@
     }
 
     .clock {
-      font-size: 10rem; /* AUMENTADO */
+      font-size: 10rem;
       background: rgba(255, 255, 255, 0.1);
       padding: 40px 80px;
       border-radius: 30px;
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      margin-bottom: 20px;
     }
 
-    canvas {
-      position: fixed;
-      pointer-events: none;
-      top: 0;
-      left: 0;
+    .countdown {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #ccc;
+    }
+
+    .message {
+      font-size: 3rem;
+      margin-top: 30px;
+      opacity: 0;
+      transition: opacity 1s;
+    }
+
+    .message.show {
+      opacity: 1;
     }
   </style>
 </head>
 <body>
   <div class="clock" id="clock">--:--:--</div>
-  <canvas id="confetti"></canvas>
+  <div class="countdown" id="countdown">Calculando tiempo restante...</div>
+  <div class="message" id="message">🎉 ¡Hora de irse! 🎉</div>
 
   <script>
     const clockEl = document.getElementById("clock");
-    const confettiCanvas = document.getElementById("confetti");
+    const countdownEl = document.getElementById("countdown");
+    const messageEl = document.getElementById("message");
+
+    const targetHour = 13;
+    const targetMinute = 39;
+    const targetSecond = 50;
+
+    let confettiActive = false;
 
     function updateClock() {
       const now = new Date();
@@ -48,55 +68,69 @@
       const s = String(now.getSeconds()).padStart(2, '0');
       clockEl.textContent = `${h}:${m}:${s}`;
 
-      if (h === "13" && m === "40" && s === "00") {
+      updateCountdown(now);
+
+      if (
+        now.getHours() === targetHour &&
+        now.getMinutes() === targetMinute &&
+        now.getSeconds() === targetSecond &&
+        !confettiActive
+      ) {
+        confettiActive = true;
+        showMessage();
         launchConfetti();
       }
     }
 
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    function launchConfetti() {
-      const confetti = confettiCanvas;
-      const ctx = confetti.getContext('2d');
-      confetti.width = window.innerWidth;
-      confetti.height = window.innerHeight;
-
-      const pieces = Array.from({ length: 150 }, () => ({
-        x: Math.random() * confetti.width,
-        y: Math.random() * -confetti.height,
-        size: Math.random() * 8 + 4,
-        speed: Math.random() * 3 + 2,
-        color: `hsl(${Math.random() * 360}, 100%, 50%)`
-      }));
-
-      let running = true;
-
-      function draw() {
-        if (!running) return;
-        ctx.clearRect(0, 0, confetti.width, confetti.height);
-        pieces.forEach(p => {
-          ctx.fillStyle = p.color;
-          ctx.fillRect(p.x, p.y, p.size, p.size);
-          p.y += p.speed;
-          if (p.y > confetti.height) p.y = -p.size;
-        });
-        requestAnimationFrame(draw);
+    function updateCountdown(now) {
+      const target = new Date();
+      target.setHours(targetHour, targetMinute, targetSecond, 0);
+      if (now > target) {
+        target.setDate(target.getDate() + 1); // siguiente día
       }
+      const diff = target - now;
 
-      draw();
+      const hours = String(Math.floor(diff / 1000 / 60 / 60)).padStart(2, '0');
+      const minutes = String(Math.floor((diff / 1000 / 60) % 60)).padStart(2, '0');
+      const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
 
-      // Detener animación después de 10 segundos
-      setTimeout(() => {
-        running = false;
-        ctx.clearRect(0, 0, confetti.width, confetti.height);
-      }, 10000);
+      countdownEl.textContent = `Faltan ${hours}:${minutes}:${seconds} para la hora mágica`;
     }
 
-    window.addEventListener('resize', () => {
-      confettiCanvas.width = window.innerWidth;
-      confettiCanvas.height = window.innerHeight;
-    });
+    function showMessage() {
+      messageEl.classList.add("show");
+      setTimeout(() => {
+        messageEl.classList.remove("show");
+        confettiActive = false;
+      }, 10000); // quitar después de 10s
+    }
+
+    function launchConfetti() {
+      const duration = 10 * 1000;
+      const end = Date.now() + duration;
+
+      (function frame() {
+        confetti({
+          particleCount: 5,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+        });
+        confetti({
+          particleCount: 5,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      })();
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
   </script>
 </body>
 </html>
