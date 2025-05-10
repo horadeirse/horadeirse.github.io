@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Clemente's Clock🎉</title>
+  <title>Reloj Digital 🎉</title>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     body {
@@ -17,6 +17,7 @@
       align-items: center;
       flex-direction: column;
       position: relative;
+      overflow: hidden;
     }
 
     .clock {
@@ -109,6 +110,33 @@
       font-size: 1.2rem;
       color: #aaa;
     }
+
+    /* Shake effect */
+    @keyframes shake {
+      0% { transform: translate(0, 0); }
+      10% { transform: translate(-2px, 2px); }
+      20% { transform: translate(2px, -2px); }
+      30% { transform: translate(-4px, 4px); }
+      40% { transform: translate(4px, -4px); }
+      50% { transform: translate(-6px, 6px); }
+      60% { transform: translate(6px, -6px); }
+      70% { transform: translate(-4px, 4px); }
+      80% { transform: translate(4px, -4px); }
+      90% { transform: translate(-2px, 2px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    .shake-light {
+      animation: shake 0.3s infinite;
+    }
+
+    .shake-medium {
+      animation: shake 0.2s infinite;
+    }
+
+    .shake-strong {
+      animation: shake 0.1s infinite;
+    }
   </style>
 </head>
 <body>
@@ -187,6 +215,23 @@
 
       updateCountdown(now);
 
+      const currentTime = now.getTime();
+      const target = new Date();
+      target.setHours(targetHour, targetMinute, targetSecond, 0);
+      if (now > target) target.setDate(target.getDate() + 1);
+      const targetTime = target.getTime();
+      const diff = Math.floor((targetTime - currentTime) / 1000);
+
+      // Shake effect
+      document.body.classList.remove("shake-light", "shake-medium", "shake-strong");
+      if (diff <= 10 && diff > 6) {
+        document.body.classList.add("shake-light");
+      } else if (diff <= 6 && diff > 3) {
+        document.body.classList.add("shake-medium");
+      } else if (diff <= 3 && diff > 0) {
+        document.body.classList.add("shake-strong");
+      }
+
       if (
         now.getHours() === targetHour &&
         now.getMinutes() === targetMinute &&
@@ -196,6 +241,7 @@
         confettiActive = true;
         showMessage();
         launchConfetti();
+        document.body.classList.remove("shake-light", "shake-medium", "shake-strong");
       }
     }
 
@@ -222,23 +268,20 @@
 
     function launchConfetti() {
       const duration = 10 * 1000;
-      const end = Date.now() + duration;
+      const animationEnd = Date.now() + duration;
 
       (function frame() {
         confetti({
-          particleCount: 7,
-          angle: 60,
-          spread: 60,
-          origin: { x: 0 }
-        });
-        confetti({
-          particleCount: 7,
-          angle: 120,
-          spread: 60,
-          origin: { x: 1 }
+          particleCount: 5,
+          angle: Math.random() * 360,
+          spread: 90 + Math.random() * 90,
+          origin: {
+            x: Math.random(),
+            y: Math.random()
+          }
         });
 
-        if (Date.now() < end) {
+        if (Date.now() < animationEnd) {
           requestAnimationFrame(frame);
         }
       })();
