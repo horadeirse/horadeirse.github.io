@@ -317,14 +317,18 @@
     }
 
     function showBanner() {
-      bannerEl.classList.remove("hidden");
-      void bannerEl.offsetWidth;
-      bannerEl.classList.add("show");
-      setTimeout(() => {
-        bannerEl.classList.remove("show");
-        bannerEl.classList.add("hidden");
-      }, 10000);
-    }
+  // Asegúrate de que el banner esté oculto antes de mostrarse
+  bannerEl.classList.remove("hidden");
+  void bannerEl.offsetWidth; // Esto es necesario para forzar el reflujo
+  bannerEl.classList.add("show");
+
+  // Luego de 10 segundos, ocultamos el banner
+  setTimeout(() => {
+    bannerEl.classList.remove("show");
+    bannerEl.classList.add("hidden");
+  }, 10000); // El banner se va después de 10 segundos
+}
+
 
     function launchConfetti() {
       const duration = 10000;
@@ -345,95 +349,96 @@
     }
 
     function launchFireworks() {
-      const canvas = document.getElementById("fireworksCanvas");
-      const ctx = canvas.getContext("2d");
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      canvas.style.display = "block";
+  const canvas = document.getElementById("fireworksCanvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.style.display = "block";
 
-      const rockets = [];
-      const particles = [];
-      const startTime = Date.now();
+  const rockets = [];
+  const particles = [];
+  const startTime = Date.now();
 
-      function createRocket() {
-        rockets.push({
-          x: Math.random() * canvas.width,
-          y: canvas.height,
-          vx: (Math.random() - 0.5) * 2,
-          vy: -7 - Math.random() * 3,
-          exploded: false
-        });
-      }
+  function createRocket() {
+    rockets.push({
+      x: Math.random() * canvas.width,
+      y: canvas.height,
+      vx: (Math.random() - 0.5) * 2,
+      vy: -7 - Math.random() * 3,
+      exploded: false
+    });
+  }
 
-      function explode(x, y) {
-        for (let i = 0; i < 50; i++) {
-          const angle = Math.random() * 2 * Math.PI;
-          const speed = Math.random() * 4 + 2;
-          particles.push({
-            x,
-            y,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            life: 100,
-            color: `hsl(${Math.random() * 360}, 100%, 70%)`
-          });
-        }
-      }
-
-      function animate() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Update rockets
-        rockets.forEach((r, index) => {
-          r.x += r.vx;
-          r.y += r.vy;
-          r.vy += 0.1;
-
-          ctx.beginPath();
-          ctx.fillStyle = "white";
-          ctx.arc(r.x, r.y, 2, 0, Math.PI * 2);
-          ctx.fill();
-
-          if (!r.exploded && r.vy >= 0) {
-            explode(r.x, r.y);
-            r.exploded = true;
-            rockets.splice(index, 1);
-          }
-        });
-
-        // Update particles
-        for (let i = particles.length - 1; i >= 0; i--) {
-          const p = particles[i];
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vy += 0.05;
-          p.life--;
-
-          ctx.beginPath();
-          ctx.fillStyle = p.color;
-          ctx.globalAlpha = Math.max(p.life / 100, 0);
-          ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-          ctx.fill();
-
-          if (p.life <= 0) {
-            particles.splice(i, 1);
-          }
-        }
-
-        ctx.globalAlpha = 1;
-
-        if (Date.now() - startTime < 10000) {
-          if (Math.random() < 0.1) createRocket();
-          requestAnimationFrame(animate);
-        } else {
-          canvas.style.display = "none";
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-      }
-
-      animate();
+  function explode(x, y) {
+    for (let i = 0; i < 5; i++) {
+      const angle = Math.random() * 2 * Math.PI;
+      const speed = Math.random() * 4 + 2;
+      particles.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 100,
+        color: `hsl(${Math.random() * 360}, 100%, 70%)`
+      });
     }
+  }
+
+  function animate() {
+    // Cambié el color de fondo a transparente (rgba(0, 0, 0, 0)) en lugar de negro
+    ctx.fillStyle = "rgba(0, 0, 0, 0)"; // Fondo transparente
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Update rockets
+    rockets.forEach((r, index) => {
+      r.x += r.vx;
+      r.y += r.vy;
+      r.vy += 0.1;
+
+      ctx.beginPath();
+      ctx.fillStyle = "white";
+      ctx.arc(r.x, r.y, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (!r.exploded && r.vy >= 0) {
+        explode(r.x, r.y);
+        r.exploded = true;
+        rockets.splice(index, 1);
+      }
+    });
+
+    // Update particles
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.05;
+      p.life--;
+
+      ctx.beginPath();
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(p.life / 100, 0);
+      ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (p.life <= 0) {
+        particles.splice(i, 1);
+      }
+    }
+
+    ctx.globalAlpha = 1;
+
+    if (Date.now() - startTime < 10000) {
+      if (Math.random() < 0.1) createRocket();
+      requestAnimationFrame(animate);
+    } else {
+      canvas.style.display = "none";
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  animate();
+}
 
     function toggleSettings() {
       settingsPanel.style.display = settingsPanel.style.display === "flex" ? "none" : "flex";
