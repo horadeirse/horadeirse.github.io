@@ -9,7 +9,7 @@
     body {
       margin: 0;
       height: 100vh;
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      background: linear-gradient(to right, #2e003e, #1e2b73);
       color: white;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
@@ -134,17 +134,9 @@
       100% { transform: translate(0, 0); }
     }
 
-    .shake-light {
-      animation: shake 0.3s infinite;
-    }
-
-    .shake-medium {
-      animation: shake 0.2s infinite;
-    }
-
-    .shake-strong {
-      animation: shake 0.1s infinite;
-    }
+    .shake-light { animation: shake 0.3s infinite; }
+    .shake-medium { animation: shake 0.2s infinite; }
+    .shake-strong { animation: shake 0.1s infinite; }
 
     .banner {
       position: absolute;
@@ -161,14 +153,27 @@
       transition: top 1s ease-out;
       z-index: 20;
     }
+	
+	.tommy-banner {
+  position: absolute;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ff5733;
+  padding: 20px 40px;
+  font-size: 2.5rem;
+  color: white;
+  font-weight: bold;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: top 1s ease-out;
+  z-index: 20;
+}
 
-    .banner.show {
-      top: 100px;
-    }
+.tommy-banner.show {
+  top: 100px;
+}
 
-    .hidden {
-      display: none;
-    }
   </style>
 </head>
 <body>
@@ -188,11 +193,18 @@
       <input type="number" id="setSecond" min="0" max="59" />
       <button onclick="saveCustomTime()">Guardar</button>
     </div>
-    <div class="current-time" id="currentTimeText"></div>
+<div class="settings">
+  <label>Comando:</label>
+  <input type="text" id="commandInput" placeholder="Escribe tu comando..." />
+  <button onclick="executeCommand()">Ejecutar comando</button>
+</div>
+  
+  <div class="current-time" id="currentTimeText"></div>
   </div>
 
-  <!-- Banner -->
   <div id="banner" class="banner hidden">🚩 Vete ya subnormal 🚩</div>
+  <div id="tommyBanner" class="tommy-banner hidden">🚩 Tommy maricón 🚩</div>
+
 
   <script>
     const clockEl = document.getElementById("clock");
@@ -257,8 +269,7 @@
       const target = new Date();
       target.setHours(targetHour, targetMinute, targetSecond, 0);
       if (now > target) target.setDate(target.getDate() + 1);
-      const targetTime = target.getTime();
-      const diff = Math.floor((targetTime - currentTime) / 1000);
+      const diff = Math.floor((target - currentTime) / 1000);
 
       document.body.classList.remove("shake-light", "shake-medium", "shake-strong");
       if (diff <= 10 && diff > 6) {
@@ -307,7 +318,7 @@
 
     function showBanner() {
       bannerEl.classList.remove("hidden");
-      void bannerEl.offsetWidth; // fuerza reflow
+      void bannerEl.offsetWidth;
       bannerEl.classList.add("show");
       setTimeout(() => {
         bannerEl.classList.remove("show");
@@ -316,7 +327,7 @@
     }
 
     function launchConfetti() {
-      const duration = 10 * 1000;
+      const duration = 10000;
       const animationEnd = Date.now() + duration;
 
       (function frame() {
@@ -324,10 +335,7 @@
           particleCount: 5,
           angle: Math.random() * 360,
           spread: 90 + Math.random() * 90,
-          origin: {
-            x: Math.random(),
-            y: Math.random()
-          }
+          origin: { x: Math.random(), y: Math.random() }
         });
 
         if (Date.now() < animationEnd) {
@@ -343,53 +351,84 @@
       canvas.height = window.innerHeight;
       canvas.style.display = "block";
 
-      let particles = [];
+      const rockets = [];
+      const particles = [];
+      const startTime = Date.now();
 
-      for (let i = 0; i < 100; i++) {
-        particles.push({
+      function createRocket() {
+        rockets.push({
           x: Math.random() * canvas.width,
           y: canvas.height,
           vx: (Math.random() - 0.5) * 2,
-          vy: -Math.random() * 10 - 4,
-          gravity: 0.15,
-          radius: Math.random() * 2 + 2,
-          alpha: 1,
-          decay: Math.random() * 0.01 + 0.005,
-          color: `hsl(${Math.random() * 360}, 100%, 70%)`
+          vy: -7 - Math.random() * 3,
+          exploded: false
         });
       }
 
-      const start = Date.now();
+      function explode(x, y) {
+        for (let i = 0; i < 50; i++) {
+          const angle = Math.random() * 2 * Math.PI;
+          const speed = Math.random() * 4 + 2;
+          particles.push({
+            x,
+            y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: 100,
+            color: `hsl(${Math.random() * 360}, 100%, 70%)`
+          });
+        }
+      }
 
       function animate() {
-        const elapsed = Date.now() - start;
+        ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Update rockets
+        rockets.forEach((r, index) => {
+          r.x += r.vx;
+          r.y += r.vy;
+          r.vy += 0.1;
 
-        particles.forEach(p => {
-          p.vy += p.gravity;
+          ctx.beginPath();
+          ctx.fillStyle = "white";
+          ctx.arc(r.x, r.y, 2, 0, Math.PI * 2);
+          ctx.fill();
+
+          if (!r.exploded && r.vy >= 0) {
+            explode(r.x, r.y);
+            r.exploded = true;
+            rockets.splice(index, 1);
+          }
+        });
+
+        // Update particles
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
           p.x += p.vx;
           p.y += p.vy;
-          p.alpha -= p.decay;
-        });
+          p.vy += 0.05;
+          p.life--;
 
-        particles = particles.filter(p => p.alpha > 0);
-
-        particles.forEach(p => {
           ctx.beginPath();
-          ctx.globalAlpha = p.alpha;
           ctx.fillStyle = p.color;
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.globalAlpha = Math.max(p.life / 100, 0);
+          ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
           ctx.fill();
-        });
+
+          if (p.life <= 0) {
+            particles.splice(i, 1);
+          }
+        }
 
         ctx.globalAlpha = 1;
 
-        if (elapsed < 10000) {
+        if (Date.now() - startTime < 10000) {
+          if (Math.random() < 0.1) createRocket();
           requestAnimationFrame(animate);
         } else {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
           canvas.style.display = "none";
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
       }
 
@@ -403,6 +442,35 @@
     loadCustomTime();
     setInterval(updateClock, 1000);
     updateClock();
+  
+  // Función para mostrar el banner de "Tommy maricón" cuando se presiona la tecla "T"
+// Obtener el elemento del banner Tommy
+const tommyBannerEl = document.getElementById("tommyBanner");
+
+// Función para ejecutar el comando
+function executeCommand() {
+  const commandInput = document.getElementById("commandInput").value.toLowerCase();
+  
+  if (commandInput === "tommypene") {
+    showTommyBanner();  // Mostrar el banner si el comando es correcto
+  }
+  else {
+    alert("Comando incorrecto");
+  }
+}
+
+// Función para mostrar el banner Tommy maricón
+function showTommyBanner() {
+  tommyBannerEl.classList.remove("hidden");
+  void tommyBannerEl.offsetWidth;
+  tommyBannerEl.classList.add("show");
+  setTimeout(() => {
+    tommyBannerEl.classList.remove("show");
+    tommyBannerEl.classList.add("hidden");
+  }, 10000); // El banner se va después de 10 segundos
+}
+
+
   </script>
 </body>
 </html>
