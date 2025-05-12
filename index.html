@@ -20,6 +20,15 @@
       overflow: hidden;
     }
 
+    canvas#fireworksCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+    }
+
     .clock {
       font-size: 10rem;
       background: rgba(255, 255, 255, 0.1);
@@ -111,7 +120,6 @@
       color: #aaa;
     }
 
-    /* Shake effect */
     @keyframes shake {
       0% { transform: translate(0, 0); }
       10% { transform: translate(-2px, 2px); }
@@ -137,9 +145,35 @@
     .shake-strong {
       animation: shake 0.1s infinite;
     }
+
+    .banner {
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: crimson;
+      padding: 20px 40px;
+      font-size: 2.5rem;
+      color: white;
+      font-weight: bold;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: top 1s ease-out;
+      z-index: 20;
+    }
+
+    .banner.show {
+      top: 100px;
+    }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
+  <canvas id="fireworksCanvas"></canvas>
+
   <div class="clock" id="clock">--:--:--</div>
   <div class="countdown" id="countdown">Calculando tiempo restante...</div>
   <div class="message" id="message">🎉 ¡Hora de irse! 🎉</div>
@@ -157,11 +191,15 @@
     <div class="current-time" id="currentTimeText"></div>
   </div>
 
+  <!-- Banner -->
+  <div id="banner" class="banner hidden">🚩 Vete ya subnormal 🚩</div>
+
   <script>
     const clockEl = document.getElementById("clock");
     const countdownEl = document.getElementById("countdown");
     const messageEl = document.getElementById("message");
     const currentTimeText = document.getElementById("currentTimeText");
+    const bannerEl = document.getElementById("banner");
 
     const setHourInput = document.getElementById("setHour");
     const setMinuteInput = document.getElementById("setMinute");
@@ -222,7 +260,6 @@
       const targetTime = target.getTime();
       const diff = Math.floor((targetTime - currentTime) / 1000);
 
-      // Shake effect
       document.body.classList.remove("shake-light", "shake-medium", "shake-strong");
       if (diff <= 10 && diff > 6) {
         document.body.classList.add("shake-light");
@@ -241,6 +278,7 @@
         confettiActive = true;
         showMessage();
         launchConfetti();
+        launchFireworks();
         document.body.classList.remove("shake-light", "shake-medium", "shake-strong");
       }
     }
@@ -260,9 +298,20 @@
 
     function showMessage() {
       messageEl.classList.add("show");
+      showBanner();
       setTimeout(() => {
         messageEl.classList.remove("show");
         confettiActive = false;
+      }, 10000);
+    }
+
+    function showBanner() {
+      bannerEl.classList.remove("hidden");
+      void bannerEl.offsetWidth; // fuerza reflow
+      bannerEl.classList.add("show");
+      setTimeout(() => {
+        bannerEl.classList.remove("show");
+        bannerEl.classList.add("hidden");
       }, 10000);
     }
 
@@ -285,6 +334,66 @@
           requestAnimationFrame(frame);
         }
       })();
+    }
+
+    function launchFireworks() {
+      const canvas = document.getElementById("fireworksCanvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvas.style.display = "block";
+
+      let particles = [];
+
+      for (let i = 0; i < 100; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: canvas.height,
+          vx: (Math.random() - 0.5) * 2,
+          vy: -Math.random() * 10 - 4,
+          gravity: 0.15,
+          radius: Math.random() * 2 + 2,
+          alpha: 1,
+          decay: Math.random() * 0.01 + 0.005,
+          color: `hsl(${Math.random() * 360}, 100%, 70%)`
+        });
+      }
+
+      const start = Date.now();
+
+      function animate() {
+        const elapsed = Date.now() - start;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach(p => {
+          p.vy += p.gravity;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.alpha -= p.decay;
+        });
+
+        particles = particles.filter(p => p.alpha > 0);
+
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.globalAlpha = p.alpha;
+          ctx.fillStyle = p.color;
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        ctx.globalAlpha = 1;
+
+        if (elapsed < 10000) {
+          requestAnimationFrame(animate);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          canvas.style.display = "none";
+        }
+      }
+
+      animate();
     }
 
     function toggleSettings() {
