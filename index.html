@@ -172,9 +172,6 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     transition: top 1s ease-out;
     z-index: 20;
-  }
-
-  .banner {
     background: crimson;
   }
 
@@ -199,7 +196,7 @@
     .banner {
       font-size: 1.5rem;
       padding: 10px 20px;
-      top: 80px;
+      top: 70px; /* Cambié esto para asegurar que no esté fuera de la pantalla */
     }
 
     .settings-panel {
@@ -214,6 +211,8 @@
     .footer-instagram {
       font-size: 0.9rem;
       gap: 6px;
+      position: relative; /* Aseguramos que no esté fijo */
+      bottom: 0; /* Elimina la posición absoluta */
     }
 
     .instagram-icon {
