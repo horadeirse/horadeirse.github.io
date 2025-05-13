@@ -6,224 +6,223 @@
   <title>Clemente's Cock 🎉</title>
   <link rel="icon" href="logo.png" type="image/png">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
- <style>
-  body {
-    margin: 0;
-    height: 100vh;
-    background: linear-gradient(to right, #2e003e, #1e2b73);
-    color: white;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    position: relative;
-    overflow: hidden;
-  }
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(to right, #2e003e, #1e2b73);
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
 
-  canvas#fireworksCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 9999;
-    display: none;
-  }
+    canvas#fireworksCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+    }
 
-  .clock {
-    font-size: 10rem;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 40px 80px;
-    border-radius: 30px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-    margin-bottom: 20px;
-  }
-
-  .countdown {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    color: #ccc;
-  }
-
-  .message {
-    font-size: 3rem;
-    margin-top: 30px;
-    opacity: 0;
-    transition: opacity 1s;
-  }
-
-  .message.show {
-    opacity: 1;
-  }
-
-  .config-icon {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 2rem;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-    z-index: 10;
-  }
-
-  .config-icon:hover {
-    transform: rotate(30deg);
-  }
-
-  .settings-panel {
-    position: absolute;
-    top: 70px;
-    right: 20px;
-    background-color: rgba(255, 255, 255, 0.05);
-    padding: 15px;
-    border-radius: 15px;
-    display: none;
-    flex-direction: column;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    z-index: 9;
-  }
-
-  .settings {
-    font-size: 1rem;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-
-  .settings input {
-    font-size: 1rem;
-    padding: 5px;
-    width: 60px;
-    text-align: center;
-    background: #1a1a1a;
-    border: 1px solid #444;
-    color: white;
-    border-radius: 5px;
-  }
-
-  .settings button {
-    padding: 5px 10px;
-    background-color: #4caf50;
-    border: none;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-
-  .footer-instagram {
-    position: absolute;
-    bottom: 10px;
-    width: 100%;
-    text-align: center;
-    font-size: 1rem;
-    color: #ccc;
-    opacity: 0.8;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .instagram-icon {
-    width: 18px;
-    height: 18px;
-    filter: brightness(0) invert(1);
-  }
-
-  .settings button:hover {
-    background-color: #45a049;
-  }
-
-  .current-time {
-    margin-top: 10px;
-    font-size: 1.2rem;
-    color: #aaa;
-  }
-
-  @keyframes shake {
-    0% { transform: translate(0, 0); }
-    10% { transform: translate(-2px, 2px); }
-    20% { transform: translate(2px, -2px); }
-    30% { transform: translate(-4px, 4px); }
-    40% { transform: translate(4px, -4px); }
-    50% { transform: translate(-6px, 6px); }
-    60% { transform: translate(6px, -6px); }
-    70% { transform: translate(-4px, 4px); }
-    80% { transform: translate(4px, -4px); }
-    90% { transform: translate(-2px, 2px); }
-    100% { transform: translate(0, 0); }
-  }
-
-  .shake-light { animation: shake 0.3s infinite; }
-  .shake-medium { animation: shake 0.2s infinite; }
-  .shake-strong { animation: shake 0.1s infinite; }
-
-  .banner {
-    position: absolute;
-    top: -200px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 20px 40px;
-    font-size: 2.5rem;
-    color: white;
-    font-weight: bold;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    transition: top 1s ease-out;
-    z-index: 20;
-    background: crimson;
-  }
-
-  .banner.show {
-    top: 100px;
-  }
-
-  @media (max-width: 600px) {
     .clock {
-      font-size: 4rem;
-      padding: 20px 40px;
+      font-size: 10rem;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 40px 80px;
+      border-radius: 30px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      margin-bottom: 20px;
     }
 
     .countdown {
-      font-size: 1.2rem;
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #ccc;
     }
 
     .message {
-      font-size: 2rem;
+      font-size: 3rem;
+      margin-top: 30px;
+      opacity: 0;
+      transition: opacity 1s;
     }
 
-    .banner {
-      font-size: 1.5rem;
-      padding: 10px 20px;
-      top: 70px; /* Cambié esto para asegurar que no esté fuera de la pantalla */
+    .message.show {
+      opacity: 1;
+    }
+
+    .config-icon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 2rem;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      z-index: 10;
+    }
+
+    .config-icon:hover {
+      transform: rotate(30deg);
     }
 
     .settings-panel {
-      width: 90%;
-      right: 5%;
+      position: absolute;
+      top: 70px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      border-radius: 15px;
+      display: none;
+      flex-direction: column;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      z-index: 9;
+    }
+
+    .settings {
+      font-size: 1rem;
+      display: flex;
+      gap: 10px;
+      align-items: center;
     }
 
     .settings input {
-      width: 50px;
+      font-size: 1rem;
+      padding: 5px;
+      width: 60px;
+      text-align: center;
+      background: #1a1a1a;
+      border: 1px solid #444;
+      color: white;
+      border-radius: 5px;
+    }
+
+    .settings button {
+      padding: 5px 10px;
+      background-color: #4caf50;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .settings button:hover {
+      background-color: #45a049;
+    }
+
+    .current-time {
+      margin-top: 10px;
+      font-size: 1.2rem;
+      color: #aaa;
     }
 
     .footer-instagram {
-      font-size: 0.9rem;
-      gap: 6px;
-      position: relative; /* Aseguramos que no esté fijo */
-      bottom: 0; /* Elimina la posición absoluta */
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      font-size: 1rem;
+      color: #ccc;
+      opacity: 0.8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
     }
 
     .instagram-icon {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
+      filter: brightness(0) invert(1);
     }
-  }
-</style>
 
+    @keyframes shake {
+      0% { transform: translate(0, 0); }
+      10% { transform: translate(-2px, 2px); }
+      20% { transform: translate(2px, -2px); }
+      30% { transform: translate(-4px, 4px); }
+      40% { transform: translate(4px, -4px); }
+      50% { transform: translate(-6px, 6px); }
+      60% { transform: translate(6px, -6px); }
+      70% { transform: translate(-4px, 4px); }
+      80% { transform: translate(4px, -4px); }
+      90% { transform: translate(-2px, 2px); }
+      100% { transform: translate(0, 0); }
+    }
 
+    .shake-light { animation: shake 0.3s infinite; }
+    .shake-medium { animation: shake 0.2s infinite; }
+    .shake-strong { animation: shake 0.1s infinite; }
+
+    .banner {
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 20px 40px;
+      font-size: 2.5rem;
+      color: white;
+      font-weight: bold;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: top 1s ease-out;
+      z-index: 20;
+      background: crimson;
+    }
+
+    .banner.show {
+      top: 100px;
+    }
+
+    @media (max-width: 600px) {
+      .clock {
+        font-size: 4rem;
+        padding: 20px 40px;
+      }
+
+      .countdown {
+        font-size: 1.2rem;
+      }
+
+      .message {
+        font-size: 2rem;
+      }
+
+      .banner {
+        font-size: 1.5rem;
+        padding: 10px 20px;
+        top: 70px;
+      }
+
+      .settings-panel {
+        width: 90%;
+        right: 5%;
+      }
+
+      .settings input {
+        width: 50px;
+      }
+
+      .footer-instagram {
+        font-size: 0.9rem;
+        gap: 6px;
+        position: relative;
+        bottom: 0;
+      }
+
+      .instagram-icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  </style>
 </head>
+
 <body>
   <canvas id="fireworksCanvas"></canvas>
 
@@ -248,6 +247,7 @@
     <div class="current-time" id="currentTimeText"></div>
   </div>
 
+  <!-- 🔧 Banner SIN clase 'show' -->
   <div id="banner" class="banner">🚩 Vete ya subnormal 🚩</div>
 
   <script>
@@ -265,17 +265,17 @@
     let targetMinute = 39;
     let targetSecond = 40;
 
-let customBannerText = localStorage.getItem("bannerText") || "Vete ya subnormal";
-const commandInput = document.getElementById("commandInput");
+    let customBannerText = localStorage.getItem("bannerText") || "Vete ya subnormal";
+    const commandInput = document.getElementById("commandInput");
 
-function saveCustomBannerText() {
-  const input = commandInput.value.trim();
-  if (input) {
-    customBannerText = input;
-    localStorage.setItem("bannerText", customBannerText);
-    alert("Mensaje personalizado guardado.");
-  }
-}
+    function saveCustomBannerText() {
+      const input = commandInput.value.trim();
+      if (input) {
+        customBannerText = input;
+        localStorage.setItem("bannerText", customBannerText);
+        alert("Mensaje personalizado guardado.");
+      }
+    }
 
     function loadCustomTime() {
       const saved = JSON.parse(localStorage.getItem("horaMagica"));
@@ -310,15 +310,18 @@ function saveCustomBannerText() {
       const s = String(now.getSeconds()).padStart(2, '0');
       clockEl.textContent = `${h}:${m}:${s}`;
       updateCountdown(now);
+
       const currentTime = now.getTime();
       const target = new Date();
       target.setHours(targetHour, targetMinute, targetSecond, 0);
       if (now > target) target.setDate(target.getDate() + 1);
+
       const diff = Math.floor((target - currentTime) / 1000);
       document.body.classList.remove("shake-light", "shake-medium", "shake-strong");
       if (diff <= 10 && diff > 6) document.body.classList.add("shake-light");
       else if (diff <= 6 && diff > 3) document.body.classList.add("shake-medium");
       else if (diff <= 3 && diff > 0) document.body.classList.add("shake-strong");
+
       if (h == targetHour && m == targetMinute && s == targetSecond && !confettiActive) {
         confettiActive = true;
         showMessage();
@@ -348,16 +351,14 @@ function saveCustomBannerText() {
       }, 10000);
     }
 
-   function showBanner() {
-  bannerEl.textContent = `🚩 ${customBannerText} 🚩`;
-  bannerEl.classList.add("show");  // Esta línea activa la clase 'show'
-  setTimeout(() => {
-    bannerEl.classList.remove("show");  // Elimina la clase después de 10 segundos
-  }, 10000);
-}
+    function showBanner() {
+      bannerEl.textContent = `🚩 ${customBannerText} 🚩`;
+      bannerEl.classList.add("show");
+      setTimeout(() => {
+        bannerEl.classList.remove("show");
+      }, 10000);
+    }
 
-
-  
     function launchConfetti() {
       const duration = 10000;
       const animationEnd = Date.now() + duration;
@@ -372,95 +373,91 @@ function saveCustomBannerText() {
       })();
     }
 
-  function launchFireworks() {
-  const canvas = document.getElementById("fireworksCanvas");
-  const ctx = canvas.getContext("2d");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  canvas.style.display = "block";
+    function launchFireworks() {
+      const canvas = document.getElementById("fireworksCanvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvas.style.display = "block";
 
-  const rockets = [];
-  const particles = [];
-  const duration = 10000;
-  const endTime = Date.now() + duration;
+      const rockets = [];
+      const particles = [];
+      const duration = 10000;
+      const endTime = Date.now() + duration;
 
-  function createRocket() {
-    rockets.push({
-      x: Math.random() * canvas.width,
-      y: canvas.height,
-      vx: (Math.random() - 0.5) * 2,
-      vy: -7 - Math.random() * 3,
-      exploded: false
-    });
-  }
-
-  function explode(x, y) {
-    for (let i = 0; i < 25; i++) {
-      const angle = Math.random() * 2 * Math.PI;
-      const speed = Math.random() * 4 + 2;
-      particles.push({
-        x, y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        life: 100,
-        color: `hsl(${Math.random() * 360}, 100%, 70%)`
-      });
-    }
-  }
-
-  function animate() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Update rockets
-    for (let i = rockets.length - 1; i >= 0; i--) {
-      const r = rockets[i];
-      r.x += r.vx;
-      r.y += r.vy;
-      r.vy += 0.1;
-      ctx.beginPath();
-      ctx.fillStyle = "white";
-      ctx.arc(r.x, r.y, 2, 0, Math.PI * 2);
-      ctx.fill();
-      if (!r.exploded && r.vy >= 0) {
-        explode(r.x, r.y);
-        r.exploded = true;
-        rockets.splice(i, 1);
+      function createRocket() {
+        rockets.push({
+          x: Math.random() * canvas.width,
+          y: canvas.height,
+          vx: (Math.random() - 0.5) * 2,
+          vy: -7 - Math.random() * 3,
+          exploded: false
+        });
       }
-    }
 
-    // Update particles
-    for (let i = particles.length - 1; i >= 0; i--) {
-      const p = particles[i];
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += 0.05;
-      p.life--;
-      ctx.beginPath();
-      ctx.fillStyle = p.color;
-      ctx.globalAlpha = Math.max(p.life / 100, 0);
-      ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-      ctx.fill();
-      if (p.life <= 0) {
-        particles.splice(i, 1);
+      function explode(x, y) {
+        for (let i = 0; i < 25; i++) {
+          const angle = Math.random() * 2 * Math.PI;
+          const speed = Math.random() * 4 + 2;
+          particles.push({
+            x, y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: 100,
+            color: `hsl(${Math.random() * 360}, 100%, 70%)`
+          });
+        }
       }
+
+      function animate() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = rockets.length - 1; i >= 0; i--) {
+          const r = rockets[i];
+          r.x += r.vx;
+          r.y += r.vy;
+          r.vy += 0.1;
+          ctx.beginPath();
+          ctx.fillStyle = "white";
+          ctx.arc(r.x, r.y, 2, 0, Math.PI * 2);
+          ctx.fill();
+          if (!r.exploded && r.vy >= 0) {
+            explode(r.x, r.y);
+            r.exploded = true;
+            rockets.splice(i, 1);
+          }
+        }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.05;
+          p.life--;
+          ctx.beginPath();
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = Math.max(p.life / 100, 0);
+          ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+          ctx.fill();
+          if (p.life <= 0) {
+            particles.splice(i, 1);
+          }
+        }
+
+        ctx.globalAlpha = 1;
+
+        if (Date.now() < endTime || particles.length > 0) {
+          if (Date.now() < endTime && Math.random() < 0.1) createRocket();
+          requestAnimationFrame(animate);
+        } else {
+          canvas.style.display = "none";
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+
+      animate();
     }
-
-    ctx.globalAlpha = 1;
-
-    // Keep animating while there are fireworks or particles
-    if (Date.now() < endTime || particles.length > 0) {
-      if (Date.now() < endTime && Math.random() < 0.1) createRocket();
-      requestAnimationFrame(animate);
-    } else {
-      canvas.style.display = "none";
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-  }
-
-  animate();
-}
-
 
     function toggleSettings() {
       settingsPanel.style.display = settingsPanel.style.display === "flex" ? "none" : "flex";
@@ -470,9 +467,10 @@ function saveCustomBannerText() {
     setInterval(updateClock, 1000);
     updateClock();
   </script>
-<div class="footer-instagram">
-  <img src="instagram.png" alt="Instagram" class="instagram-icon">
-  @adrian.aalvarezz
-</div>
+
+  <div class="footer-instagram">
+    <img src="instagram.png" alt="Instagram" class="instagram-icon">
+    @adrian.aalvarezz
+  </div>
 </body>
 </html>
