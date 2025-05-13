@@ -254,7 +254,6 @@
   </div>
 
   <div id="banner" class="banner">🚩 Vete ya subnormal 🚩</div>
-  <div id="tommyBanner" class="tommy-banner">🚩 Tommy maricón 🚩</div>
 
   <script>
     const clockEl = document.getElementById("clock");
@@ -262,7 +261,6 @@
     const messageEl = document.getElementById("message");
     const currentTimeText = document.getElementById("currentTimeText");
     const bannerEl = document.getElementById("banner");
-    const tommyBannerEl = document.getElementById("tommyBanner");
     const setHourInput = document.getElementById("setHour");
     const setMinuteInput = document.getElementById("setMinute");
     const setSecondInput = document.getElementById("setSecond");
@@ -363,20 +361,7 @@ function saveCustomBannerText() {
   }, 10000);
 }
 
-
-    function executeCommand() {
-      const commandInput = document.getElementById("commandInput").value.toLowerCase();
-      if (commandInput === "tommypene") showTommyBanner();
-      else alert("Comando incorrecto");
-    }
-
-    function showTommyBanner() {
-      tommyBannerEl.classList.add("show");
-      setTimeout(() => {
-        tommyBannerEl.classList.remove("show");
-      }, 10000);
-    }
-
+  
     function launchConfetti() {
       const duration = 10000;
       const animationEnd = Date.now() + duration;
