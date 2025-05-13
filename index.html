@@ -118,8 +118,19 @@
   text-align: center;
   font-size: 1rem;
   color: #ccc;
-  opacity: 0.7;
+  opacity: 0.8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 }
+
+.instagram-icon {
+  width: 18px;
+  height: 18px;
+  filter: brightness(0) invert(1);
+}
+
 
 
     .settings button:hover {
@@ -438,6 +449,9 @@ function saveCustomBannerText() {
     setInterval(updateClock, 1000);
     updateClock();
   </script>
-<div class="footer-instagram">@adrian.aalvarezz</div>
+<div class="footer-instagram">
+  <img src="instagram.png" alt="Instagram" class="instagram-icon">
+  @adrian.aalvarezz
+</div>
 </body>
 </html>
