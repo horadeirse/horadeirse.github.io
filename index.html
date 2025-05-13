@@ -6,6 +6,7 @@
   <title>Clemente's Cock 🎉</title>
   <link rel="icon" href="logo.png" type="image/png">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
   <style>
     body {
       margin: 0;
@@ -19,6 +20,33 @@
       flex-direction: column;
       position: relative;
       overflow: hidden;
+    }
+
+    #mobileWarning {
+      display: none;
+      font-size: 1.5rem;
+      color: white;
+      background: #c0392b;
+      padding: 30px;
+      text-align: center;
+      height: 100vh;
+      width: 100vw;
+      box-sizing: border-box;
+      z-index: 999999;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    @media (max-width: 768px) {
+      body > *:not(#mobileWarning) {
+        display: none !important;
+      }
+      #mobileWarning {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
     }
 
     canvas#fireworksCanvas {
@@ -111,16 +139,6 @@
       border-radius: 5px;
     }
 
-    .settings button:hover {
-      background-color: #45a049;
-    }
-
-    .current-time {
-      margin-top: 10px;
-      font-size: 1.2rem;
-      color: #aaa;
-    }
-
     .footer-instagram {
       position: absolute;
       bottom: 10px;
@@ -141,8 +159,18 @@
       filter: brightness(0) invert(1);
     }
 
+    .settings button:hover {
+      background-color: #45a049;
+    }
+
+    .current-time {
+      margin-top: 10px;
+      font-size: 1.2rem;
+      color: #aaa;
+    }
+
     @keyframes shake {
-      0% { transform: translate(0, 0); }
+      0%, 100% { transform: translate(0, 0); }
       10% { transform: translate(-2px, 2px); }
       20% { transform: translate(2px, -2px); }
       30% { transform: translate(-4px, 4px); }
@@ -152,7 +180,6 @@
       70% { transform: translate(-4px, 4px); }
       80% { transform: translate(4px, -4px); }
       90% { transform: translate(-2px, 2px); }
-      100% { transform: translate(0, 0); }
     }
 
     .shake-light { animation: shake 0.3s infinite; }
@@ -178,54 +205,15 @@
     .banner.show {
       top: 100px;
     }
-
-    @media (max-width: 600px) {
-      .clock {
-        font-size: 4rem;
-        padding: 20px 40px;
-      }
-
-      .countdown {
-        font-size: 1.2rem;
-      }
-
-      .message {
-        font-size: 2rem;
-      }
-
-      .banner {
-        font-size: 1.5rem;
-        padding: 10px 20px;
-        top: 70px;
-      }
-
-      .settings-panel {
-        width: 90%;
-        right: 5%;
-      }
-
-      .settings input {
-        width: 50px;
-      }
-
-      .footer-instagram {
-        font-size: 0.9rem;
-        gap: 6px;
-        position: relative;
-        bottom: 0;
-      }
-
-      .instagram-icon {
-        width: 16px;
-        height: 16px;
-      }
-    }
   </style>
 </head>
 
 <body>
-  <canvas id="fireworksCanvas"></canvas>
+  <div id="mobileWarning">
+    📵 Esta página no es compatible en móviles. Usa un ordenador.
+  </div>
 
+  <canvas id="fireworksCanvas"></canvas>
   <div class="clock" id="clock">--:--:--</div>
   <div class="countdown" id="countdown">Calculando tiempo restante...</div>
   <div class="message" id="message">🎉 ¡Hora de irse! 🎉</div>
@@ -247,7 +235,6 @@
     <div class="current-time" id="currentTimeText"></div>
   </div>
 
-  <!-- 🔧 Banner SIN clase 'show' -->
   <div id="banner" class="banner">🚩 Vete ya subnormal 🚩</div>
 
   <script>
@@ -260,13 +247,13 @@
     const setMinuteInput = document.getElementById("setMinute");
     const setSecondInput = document.getElementById("setSecond");
     const settingsPanel = document.getElementById("settingsPanel");
+    const commandInput = document.getElementById("commandInput");
+
     let confettiActive = false;
     let targetHour = 13;
     let targetMinute = 39;
     let targetSecond = 40;
-
     let customBannerText = localStorage.getItem("bannerText") || "Vete ya subnormal";
-    const commandInput = document.getElementById("commandInput");
 
     function saveCustomBannerText() {
       const input = commandInput.value.trim();
@@ -310,12 +297,10 @@
       const s = String(now.getSeconds()).padStart(2, '0');
       clockEl.textContent = `${h}:${m}:${s}`;
       updateCountdown(now);
-
       const currentTime = now.getTime();
       const target = new Date();
       target.setHours(targetHour, targetMinute, targetSecond, 0);
       if (now > target) target.setDate(target.getDate() + 1);
-
       const diff = Math.floor((target - currentTime) / 1000);
       document.body.classList.remove("shake-light", "shake-medium", "shake-strong");
       if (diff <= 10 && diff > 6) document.body.classList.add("shake-light");
@@ -359,6 +344,10 @@
       }, 10000);
     }
 
+    function toggleSettings() {
+      settingsPanel.style.display = settingsPanel.style.display === "flex" ? "none" : "flex";
+    }
+
     function launchConfetti() {
       const duration = 10000;
       const animationEnd = Date.now() + duration;
@@ -379,7 +368,6 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       canvas.style.display = "block";
-
       const rockets = [];
       const particles = [];
       const duration = 10000;
@@ -410,9 +398,7 @@
       }
 
       function animate() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         for (let i = rockets.length - 1; i >= 0; i--) {
           const r = rockets[i];
           r.x += r.vx;
@@ -457,10 +443,6 @@
       }
 
       animate();
-    }
-
-    function toggleSettings() {
-      settingsPanel.style.display = settingsPanel.style.display === "flex" ? "none" : "flex";
     }
 
     loadCustomTime();
