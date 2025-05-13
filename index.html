@@ -138,12 +138,11 @@
     .shake-medium { animation: shake 0.2s infinite; }
     .shake-strong { animation: shake 0.1s infinite; }
 
-    .banner {
+    .banner, .tommy-banner {
       position: absolute;
       top: -200px;
       left: 50%;
       transform: translateX(-50%);
-      background: crimson;
       padding: 20px 40px;
       font-size: 2.5rem;
       color: white;
@@ -153,27 +152,18 @@
       transition: top 1s ease-out;
       z-index: 20;
     }
-	
-	.tommy-banner {
-  position: absolute;
-  top: -200px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #ff5733;
-  padding: 20px 40px;
-  font-size: 2.5rem;
-  color: white;
-  font-weight: bold;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  transition: top 1s ease-out;
-  z-index: 20;
-}
 
-.tommy-banner.show {
-  top: 100px;
-}
+    .banner {
+      background: crimson;
+    }
 
+    .tommy-banner {
+      background: #ff5733;
+    }
+
+    .banner.show, .tommy-banner.show {
+      top: 100px;
+    }
   </style>
 </head>
 <body>
@@ -182,7 +172,6 @@
   <div class="clock" id="clock">--:--:--</div>
   <div class="countdown" id="countdown">Calculando tiempo restante...</div>
   <div class="message" id="message">🎉 ¡Hora de irse! 🎉</div>
-
   <div class="config-icon" onclick="toggleSettings()">⚙️</div>
 
   <div class="settings-panel" id="settingsPanel">
@@ -193,18 +182,16 @@
       <input type="number" id="setSecond" min="0" max="59" />
       <button onclick="saveCustomTime()">Guardar</button>
     </div>
-<div class="settings">
-  <label>Comando:</label>
-  <input type="text" id="commandInput" placeholder="Escribe tu comando..." />
-  <button onclick="executeCommand()">Ejecutar comando</button>
-</div>
-  
-  <div class="current-time" id="currentTimeText"></div>
+    <div class="settings">
+      <label>Comando:</label>
+      <input type="text" id="commandInput" placeholder="Escribe tu comando..." />
+      <button onclick="executeCommand()">Ejecutar comando</button>
+    </div>
+    <div class="current-time" id="currentTimeText"></div>
   </div>
 
-  <div id="banner" class="banner hidden">🚩 Vete ya subnormal 🚩</div>
-  <div id="tommyBanner" class="tommy-banner hidden">🚩 Tommy maricón 🚩</div>
-
+  <div id="banner" class="banner">🚩 Vete ya subnormal 🚩</div>
+  <div id="tommyBanner" class="tommy-banner">🚩 Tommy maricón 🚩</div>
 
   <script>
     const clockEl = document.getElementById("clock");
@@ -212,14 +199,12 @@
     const messageEl = document.getElementById("message");
     const currentTimeText = document.getElementById("currentTimeText");
     const bannerEl = document.getElementById("banner");
-
+    const tommyBannerEl = document.getElementById("tommyBanner");
     const setHourInput = document.getElementById("setHour");
     const setMinuteInput = document.getElementById("setMinute");
     const setSecondInput = document.getElementById("setSecond");
     const settingsPanel = document.getElementById("settingsPanel");
-
     let confettiActive = false;
-
     let targetHour = 13;
     let targetMinute = 39;
     let targetSecond = 50;
@@ -241,13 +226,7 @@
       targetHour = parseInt(setHourInput.value, 10);
       targetMinute = parseInt(setMinuteInput.value, 10);
       targetSecond = parseInt(setSecondInput.value, 10);
-
-      localStorage.setItem("horaMagica", JSON.stringify({
-        hour: targetHour,
-        minute: targetMinute,
-        second: targetSecond
-      }));
-
+      localStorage.setItem("horaMagica", JSON.stringify({ hour: targetHour, minute: targetMinute, second: targetSecond }));
       updateCurrentTimeText();
       settingsPanel.style.display = "none";
     }
@@ -262,32 +241,20 @@
       const m = String(now.getMinutes()).padStart(2, '0');
       const s = String(now.getSeconds()).padStart(2, '0');
       clockEl.textContent = `${h}:${m}:${s}`;
-
       updateCountdown(now);
-
       const currentTime = now.getTime();
       const target = new Date();
       target.setHours(targetHour, targetMinute, targetSecond, 0);
       if (now > target) target.setDate(target.getDate() + 1);
       const diff = Math.floor((target - currentTime) / 1000);
-
       document.body.classList.remove("shake-light", "shake-medium", "shake-strong");
-      if (diff <= 10 && diff > 6) {
-        document.body.classList.add("shake-light");
-      } else if (diff <= 6 && diff > 3) {
-        document.body.classList.add("shake-medium");
-      } else if (diff <= 3 && diff > 0) {
-        document.body.classList.add("shake-strong");
-      }
-
-      if (
-        now.getHours() === targetHour &&
-        now.getMinutes() === targetMinute &&
-        now.getSeconds() === targetSecond &&
-        !confettiActive
-      ) {
+      if (diff <= 10 && diff > 6) document.body.classList.add("shake-light");
+      else if (diff <= 6 && diff > 3) document.body.classList.add("shake-medium");
+      else if (diff <= 3 && diff > 0) document.body.classList.add("shake-strong");
+      if (h == targetHour && m == targetMinute && s == targetSecond && !confettiActive) {
         confettiActive = true;
         showMessage();
+        showBanner();
         launchConfetti();
         launchFireworks();
         document.body.classList.remove("shake-light", "shake-medium", "shake-strong");
@@ -299,17 +266,14 @@
       target.setHours(targetHour, targetMinute, targetSecond, 0);
       if (now > target) target.setDate(target.getDate() + 1);
       const diff = target - now;
-
       const hours = String(Math.floor(diff / 1000 / 60 / 60)).padStart(2, '0');
       const minutes = String(Math.floor((diff / 1000 / 60) % 60)).padStart(2, '0');
       const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
-
       countdownEl.textContent = `Faltan ${hours}:${minutes}:${seconds} para la hora mágica`;
     }
 
     function showMessage() {
       messageEl.classList.add("show");
-      showBanner();
       setTimeout(() => {
         messageEl.classList.remove("show");
         confettiActive = false;
@@ -317,23 +281,28 @@
     }
 
     function showBanner() {
-  // Asegúrate de que el banner esté oculto antes de mostrarse
-  bannerEl.classList.remove("hidden");
-  void bannerEl.offsetWidth; // Esto es necesario para forzar el reflujo
-  bannerEl.classList.add("show");
+      bannerEl.classList.add("show");
+      setTimeout(() => {
+        bannerEl.classList.remove("show");
+      }, 10000);
+    }
 
-  // Luego de 10 segundos, ocultamos el banner
-  setTimeout(() => {
-    bannerEl.classList.remove("show");
-    bannerEl.classList.add("hidden");
-  }, 10000); // El banner se va después de 10 segundos
-}
+    function executeCommand() {
+      const commandInput = document.getElementById("commandInput").value.toLowerCase();
+      if (commandInput === "tommypene") showTommyBanner();
+      else alert("Comando incorrecto");
+    }
 
+    function showTommyBanner() {
+      tommyBannerEl.classList.add("show");
+      setTimeout(() => {
+        tommyBannerEl.classList.remove("show");
+      }, 10000);
+    }
 
     function launchConfetti() {
       const duration = 10000;
       const animationEnd = Date.now() + duration;
-
       (function frame() {
         confetti({
           particleCount: 5,
@@ -341,14 +310,11 @@
           spread: 90 + Math.random() * 90,
           origin: { x: Math.random(), y: Math.random() }
         });
-
-        if (Date.now() < animationEnd) {
-          requestAnimationFrame(frame);
-        }
+        if (Date.now() < animationEnd) requestAnimationFrame(frame);
       })();
     }
 
-    function launchFireworks() {
+  function launchFireworks() {
   const canvas = document.getElementById("fireworksCanvas");
   const ctx = canvas.getContext("2d");
   canvas.width = window.innerWidth;
@@ -357,7 +323,8 @@
 
   const rockets = [];
   const particles = [];
-  const startTime = Date.now();
+  const duration = 10000;
+  const endTime = Date.now() + duration;
 
   function createRocket() {
     rockets.push({
@@ -370,12 +337,11 @@
   }
 
   function explode(x, y) {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 25; i++) {
       const angle = Math.random() * 2 * Math.PI;
       const speed = Math.random() * 4 + 2;
       particles.push({
-        x,
-        y,
+        x, y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         life: 100,
@@ -385,27 +351,25 @@
   }
 
   function animate() {
-    // Cambié el color de fondo a transparente (rgba(0, 0, 0, 0)) en lugar de negro
-    ctx.fillStyle = "rgba(0, 0, 0, 0)"; // Fondo transparente
+    ctx.fillStyle = "rgba(0, 0, 0, 0)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Update rockets
-    rockets.forEach((r, index) => {
+    for (let i = rockets.length - 1; i >= 0; i--) {
+      const r = rockets[i];
       r.x += r.vx;
       r.y += r.vy;
       r.vy += 0.1;
-
       ctx.beginPath();
       ctx.fillStyle = "white";
       ctx.arc(r.x, r.y, 2, 0, Math.PI * 2);
       ctx.fill();
-
       if (!r.exploded && r.vy >= 0) {
         explode(r.x, r.y);
         r.exploded = true;
-        rockets.splice(index, 1);
+        rockets.splice(i, 1);
       }
-    });
+    }
 
     // Update particles
     for (let i = particles.length - 1; i >= 0; i--) {
@@ -414,13 +378,11 @@
       p.y += p.vy;
       p.vy += 0.05;
       p.life--;
-
       ctx.beginPath();
       ctx.fillStyle = p.color;
       ctx.globalAlpha = Math.max(p.life / 100, 0);
       ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
       ctx.fill();
-
       if (p.life <= 0) {
         particles.splice(i, 1);
       }
@@ -428,8 +390,9 @@
 
     ctx.globalAlpha = 1;
 
-    if (Date.now() - startTime < 10000) {
-      if (Math.random() < 0.1) createRocket();
+    // Keep animating while there are fireworks or particles
+    if (Date.now() < endTime || particles.length > 0) {
+      if (Date.now() < endTime && Math.random() < 0.1) createRocket();
       requestAnimationFrame(animate);
     } else {
       canvas.style.display = "none";
@@ -440,6 +403,7 @@
   animate();
 }
 
+
     function toggleSettings() {
       settingsPanel.style.display = settingsPanel.style.display === "flex" ? "none" : "flex";
     }
@@ -447,35 +411,6 @@
     loadCustomTime();
     setInterval(updateClock, 1000);
     updateClock();
-  
-  // Función para mostrar el banner de "Tommy maricón" cuando se presiona la tecla "T"
-// Obtener el elemento del banner Tommy
-const tommyBannerEl = document.getElementById("tommyBanner");
-
-// Función para ejecutar el comando
-function executeCommand() {
-  const commandInput = document.getElementById("commandInput").value.toLowerCase();
-  
-  if (commandInput === "tommypene") {
-    showTommyBanner();  // Mostrar el banner si el comando es correcto
-  }
-  else {
-    alert("Comando incorrecto");
-  }
-}
-
-// Función para mostrar el banner Tommy maricón
-function showTommyBanner() {
-  tommyBannerEl.classList.remove("hidden");
-  void tommyBannerEl.offsetWidth;
-  tommyBannerEl.classList.add("show");
-  setTimeout(() => {
-    tommyBannerEl.classList.remove("show");
-    tommyBannerEl.classList.add("hidden");
-  }, 10000); // El banner se va después de 10 segundos
-}
-
-
   </script>
 </body>
 </html>
