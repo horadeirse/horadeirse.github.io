@@ -184,9 +184,9 @@
       <button onclick="saveCustomTime()">Guardar</button>
     </div>
     <div class="settings">
-      <label>Comando:</label>
+      <label>Banner:</label>
       <input type="text" id="commandInput" placeholder="Escribe tu comando..." />
-      <button onclick="executeCommand()">Ejecutar comando</button>
+      <button onclick="saveCustomBannerText()">Guardar mensaje</button>
     </div>
     <div class="current-time" id="currentTimeText"></div>
   </div>
@@ -209,6 +209,18 @@
     let targetHour = 13;
     let targetMinute = 39;
     let targetSecond = 40;
+
+let customBannerText = localStorage.getItem("bannerText") || "Vete ya subnormal";
+const commandInput = document.getElementById("commandInput");
+
+function saveCustomBannerText() {
+  const input = commandInput.value.trim();
+  if (input) {
+    customBannerText = input;
+    localStorage.setItem("bannerText", customBannerText);
+    alert("Mensaje personalizado guardado.");
+  }
+}
 
     function loadCustomTime() {
       const saved = JSON.parse(localStorage.getItem("horaMagica"));
@@ -282,11 +294,13 @@
     }
 
     function showBanner() {
-      bannerEl.classList.add("show");
-      setTimeout(() => {
-        bannerEl.classList.remove("show");
-      }, 10000);
-    }
+  bannerEl.textContent = `🚩 ${customBannerText} 🚩`;
+  bannerEl.classList.add("show");
+  setTimeout(() => {
+    bannerEl.classList.remove("show");
+  }, 10000);
+}
+
 
     function executeCommand() {
       const commandInput = document.getElementById("commandInput").value.toLowerCase();
