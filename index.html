@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Clemente's Cock 🎉</title>
+    <title>Clemente's Clock 🎉</title>
     <link rel="icon" href="logo.png" type="image/png">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
@@ -18,14 +18,19 @@
             flex-direction: column;
             position: relative;
             overflow: hidden;
+            /* Fondo por defecto, visible cuando no hay imagen personalizada ni fondo animado */
             background: linear-gradient(to right, #2e003e, #1e2b73);
-            transition: background 1s;
+            transition: background 1s, background-image 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         .animated-bg {
             animation: gradientShift 20s ease infinite;
             background: linear-gradient(-45deg, #ff0066, #6600ff, #00ffff, #00ff66, #ff6600, #ff00cc);
             background-size: 400% 400%;
+            background-repeat: no-repeat;
         }
 
         @keyframes gradientShift {
@@ -76,7 +81,7 @@
             cursor: pointer;
             transition: transform 0.3s ease;
             z-index: 10;
-            user-select: none; /* Prevent text selection on icon */
+            user-select: none;
         }
 
         .icon-button:hover {
@@ -88,10 +93,14 @@
         }
 
         .calendar-icon {
-            right: 70px; /* Positioned to the left of config icon */
+            right: 70px;
         }
 
-        .settings-panel, .calendar-panel {
+        .alarms-icon {
+            right: 120px;
+        }
+
+        .settings-panel, .calendar-panel, .alarms-panel {
             position: absolute;
             top: 70px;
             background-color: rgba(255, 255, 255, 0.05);
@@ -102,6 +111,8 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             z-index: 9;
+            width: 300px;
+            box-sizing: border-box;
         }
 
         .settings-panel {
@@ -109,41 +120,62 @@
         }
 
         .calendar-panel {
-             right: 70px; /* Aligned with calendar icon */
-             width: 300px; /* Adjust width as needed */
+            right: 70px;
+        }
+
+        .alarms-panel {
+            right: 120px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
 
-        .settings {
+        .settings, .alarm-entry {
             font-size: 1rem;
             display: flex;
             gap: 10px;
             align-items: center;
             margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .settings label, .alarm-entry label {
+            min-width: 80px;
         }
 
         .settings input[type="number"],
-        .settings input[type="text"] {
+        .settings input[type="text"],
+        .settings input[type="url"],
+        .alarms-panel input[type="number"],
+        .alarms-panel input[type="text"] {
             font-size: 1rem;
             padding: 5px;
-            width: 60px;
+            width: 100px;
+            max-width: calc(100% - 100px);
             text-align: center;
             background: #1a1a1a;
             border: 1px solid #444;
             color: white;
             border-radius: 5px;
+            flex-grow: 1;
         }
 
-         .settings button {
+        .settings input[type="url"] {
+            width: 200px;
+        }
+
+        .settings button, .alarms-panel button {
             padding: 5px 10px;
             background-color: #4caf50;
             border: none;
             color: white;
             cursor: pointer;
             border-radius: 5px;
+            transition: background-color 0.2s ease;
+            white-space: nowrap;
         }
 
-        .settings button:hover {
+        .settings button:hover, .alarms-panel button:hover {
             background-color: #45a049;
         }
 
@@ -151,6 +183,87 @@
             transform: scale(1.2);
             margin-left: 5px;
         }
+
+        /* Styles for file input and label */
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #1a1a1a;
+            color: white;
+            cursor: pointer;
+            padding: 5px 10px;
+            text-align: center;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .file-input-wrapper:hover {
+            background-color: #2a2a2a;
+        }
+
+        /* Alarm List Specific Styles */
+        #alarmsList {
+            margin-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 10px;
+        }
+
+        .alarm-entry {
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            background-color: rgba(0,0,0,0.2);
+        }
+        .alarm-entry div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .alarm-entry .alarm-name {
+            font-weight: bold;
+            flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .alarm-entry .alarm-time {
+            color: #aaa;
+            margin-left: 10px;
+        }
+        .alarm-entry .alarm-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+            justify-content: flex-end;
+            width: 100%;
+        }
+        .alarm-entry .alarm-actions button {
+            padding: 3px 8px;
+            font-size: 0.8rem;
+        }
+        .alarm-entry .alarm-actions .delete-btn {
+            background-color: crimson;
+        }
+        .alarm-entry .alarm-actions .delete-btn:hover {
+            background-color: darkred;
+        }
+
 
         /* Calendar Styles */
         .calendar-header {
@@ -268,17 +381,35 @@
             transition: top 1s ease-out;
             z-index: 20;
             background: crimson;
+            text-align: center;
         }
 
         .banner.show {
             top: 100px;
         }
 
-        @media (max-width: 600px) {
-            body > *:not(.not-mobile) {
-                display: none !important;
-            }
+        .party-popper-image {
+            position: fixed;
+            width: 300px; /* ¡Ahora es gigante! */
+            height: 300px; /* ¡Ahora es gigante! */
+            object-fit: contain;
+            pointer-events: none;
+            z-index: 9998;
+            animation: floatAndSwing 10s ease-in-out forwards; /* Nueva animación para el movimiento lateral */
+        }
 
+        /* Nueva animación para el movimiento combinado de flotar y balancearse */
+        @keyframes floatAndSwing {
+            0% { opacity: 1; transform: translate(-50%, 0) rotate(0deg); left: 50%; }
+            25% { transform: translate(-75%, -150px) rotate(90deg); left: 25%; } /* Se mueve a la izquierda y sube */
+            50% { transform: translate(-50%, -300px) rotate(180deg); left: 50%; } /* Vuelve al centro y sube más */
+            75% { transform: translate(-25%, -150px) rotate(270deg); left: 75%; } /* Se mueve a la derecha y baja un poco */
+            100% { opacity: 0; transform: translate(-50%, -600px) rotate(360deg); left: 50%; } /* Flota hacia arriba y desaparece */
+        }
+
+
+        /* Removido el display: none !important para elementos no-mobile */
+        @media (max-width: 600px) {
             body::before {
                 content: "Esta página no es compatible en móviles";
                 font-size: 1.5rem;
@@ -291,6 +422,12 @@
                 padding: 20px;
                 background: rgba(0,0,0,0.6);
                 border-radius: 15px;
+                z-index: 10000; /* Asegura que esté por encima de todo */
+            }
+            /* Ocultar el contenido principal en móvil, dejando solo el mensaje */
+            .clock, .countdown, .message, .icon-button,
+            .settings-panel, .calendar-panel, .alarms-panel, .banner, .footer-instagram, canvas#fireworksCanvas, .party-popper-image {
+                display: none !important;
             }
         }
     </style>
@@ -300,28 +437,40 @@
 
     <div class="clock">--:--:--</div>
     <div class="countdown">Calculando tiempo restante...</div>
-    <div class="message" id="message">🎉 ¡Hora de irse! 🎉</div>
+    <div class="message" id="message">🎉 ¡Hora Mágica! 🎉</div>
 
+    <div class="icon-button alarms-icon" onclick="toggleAlarms()">⏰</div>
     <div class="icon-button calendar-icon" onclick="toggleCalendar()">📅</div>
-
     <div class="icon-button config-icon" onclick="toggleSettings()">⚙️</div>
 
     <div class="settings-panel" id="settingsPanel">
         <div class="settings">
-            <label>Hora mágica:</label>
-            <input type="number" id="setHour" min="0" max="23" />
-            <input type="number" id="setMinute" min="0" max="59" />
-            <input type="number" id="setSecond" min="0" max="59" />
-            <button onclick="saveCustomTime()">Guardar</button>
-        </div>
-        <div class="settings">
-            <label>Banner:</label>
-            <input type="text" id="commandInput" placeholder="Escribe tu comando..." />
-            <button onclick="saveCustomBannerText()">Guardar mensaje</button>
+            <label>Mensaje por defecto para Hora Mágica:</label>
+            <input type="text" id="commandInput" placeholder="Ej: ¡Es la hora mágica!" />
+            <button onclick="saveCustomBannerText()">Guardar</button>
         </div>
         <div class="settings">
             <label>Fondo animado RGB:</label>
             <input type="checkbox" id="bgToggle" onchange="toggleRGBBackground()" />
+        </div>
+        <div class="settings">
+            <label>Imagen de Fondo:</label>
+            <div class="file-input-wrapper">
+                <span>Subir Imagen de Fondo</span>
+                <input type="file" id="bgImageUpload" accept="image/*" onchange="uploadCustomBackground(event)" />
+            </div>
+            <button onclick="clearCustomBackground()" style="background-color: #f44336;">Borrar</button>
+        </div>
+        <div class="settings">
+            <label>Activar animación de imagen:</label>
+            <input type="checkbox" id="partyPopperToggle" onchange="savePartyPopperSetting()" />
+        </div>
+        <div class="settings">
+            <label>Imagen para animación:</label>
+            <div class="file-input-wrapper">
+                <span>Subir Imagen</span>
+                <input type="file" id="partyPopperImageUpload" accept="image/*" onchange="uploadPartyPopperImage(event)" />
+            </div>
         </div>
         <div class="current-time" id="currentTimeText"></div>
     </div>
@@ -342,72 +491,79 @@
             <div>Dom</div>
         </div>
         <div class="calendar-days" id="calendarDays">
-            </div>
+        </div>
     </div>
 
-    <div id="banner" class="banner">🚩 Vete ya subnormal 🚩</div>
+    <div class="alarms-panel" id="alarmsPanel">
+        <h3>Añadir Nueva Hora Mágica</h3>
+        <div class="settings">
+            <label>Nombre:</label>
+            <input type="text" id="newAlarmName" placeholder="Ej: Hora de Salir" />
+        </div>
+        <div class="settings">
+            <label>Hora:</label>
+            <input type="number" id="newAlarmHour" min="0" max="23" value="17" />
+            <input type="number" id="newAlarmMinute" min="0" max="59" value="30" />
+            <input type="number" id="newAlarmSecond" min="0" max="59" value="00" />
+        </div>
+        <div class="settings">
+            <label>Mensaje:</label>
+            <input type="text" id="newAlarmMessage" placeholder="Mensaje para esta hora mágica (opcional)" />
+        </div>
+        <button onclick="addAlarm()">Añadir Hora Mágica</button>
+
+        <h3>Mis Horas Mágicas</h3>
+        <div id="alarmsList">
+            <p style="text-align: center; color: #888;">No hay horas mágicas guardadas.</p>
+        </div>
+    </div>
+
+
+    <div id="banner" class="banner">🚩 ¡Es la Hora Mágica! 🚩</div>
 
     <script>
         const clockEl = document.querySelector(".clock");
         const countdownEl = document.querySelector(".countdown");
         const messageEl = document.getElementById("message");
         const bannerEl = document.getElementById("banner");
-        const setHourInput = document.getElementById("setHour");
-        const setMinuteInput = document.getElementById("setMinute");
-        const setSecondInput = document.getElementById("setSecond");
         const commandInput = document.getElementById("commandInput");
         const settingsPanel = document.getElementById("settingsPanel");
-        const calendarPanel = document.getElementById("calendarPanel"); // New
+        const calendarPanel = document.getElementById("calendarPanel");
+        const alarmsPanel = document.getElementById("alarmsPanel");
         const bgToggle = document.getElementById("bgToggle");
-        const monthYearEl = document.getElementById("monthYear"); // New
-        const calendarDaysEl = document.getElementById("calendarDays"); // New
+        const monthYearEl = document.getElementById("monthYear");
+        const calendarDaysEl = document.getElementById("calendarDays");
+        const bgImageUpload = document.getElementById("bgImageUpload");
+        const partyPopperToggle = document.getElementById("partyPopperToggle");
+        const partyPopperImageUpload = document.getElementById("partyPopperImageUpload");
+        const alarmsListEl = document.getElementById("alarmsList");
 
-        let targetHour = 13;
-        let targetMinute = 39;
-        let targetSecond = 40;
+        let currentCustomBannerText = localStorage.getItem("bannerText") || "¡Es la Hora Mágica!";
         let confettiActive = false;
-        let customBannerText = localStorage.getItem("bannerText") || "Vete ya subnormal";
 
         // Calendar variables
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
         const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
-        function saveCustomBannerText() {
-            const input = commandInput.value.trim();
-            if (input) {
-                customBannerText = input;
-                localStorage.setItem("bannerText", customBannerText);
-                alert("Mensaje personalizado guardado.");
-            }
+        // Alarms Array
+        // Se carga del localStorage, si no existe, se inicializa con la alarma por defecto
+        let alarms = JSON.parse(localStorage.getItem("alarms"));
+        if (!alarms || alarms.length === 0) { // Si no hay alarmas guardadas o la lista está vacía
+            alarms = [{ id: Date.now(), name: "Hora de irse", hour: 13, minute: 39, second: 40, message: "¡Hora de irse!" }];
+            saveAlarms(); // Guarda la alarma por defecto en localStorage
         }
 
-        function loadCustomTime() {
-            const saved = JSON.parse(localStorage.getItem("horaMagica"));
-            if (saved) {
-                targetHour = saved.hour;
-                targetMinute = saved.minute;
-                targetSecond = saved.second;
-            }
-            setHourInput.value = targetHour;
-            setMinuteInput.value = targetMinute;
-            setSecondInput.value = targetSecond;
-            updateCurrentTimeText();
-        }
 
-        function saveCustomTime() {
-            targetHour = parseInt(setHourInput.value);
-            targetMinute = parseInt(setMinuteInput.value);
-            targetSecond = parseInt(setSecondInput.value);
-            localStorage.setItem("horaMagica", JSON.stringify({ hour: targetHour, minute: targetMinute, second: targetSecond }));
-            updateCurrentTimeText();
-            // settingsPanel.style.display = "none"; // Optionally close after saving
-             toggleSettings(); // Use toggle to also close calendar if open
-        }
+        // Party Popper Image and setting
+        let partyPopperImageBase64 = localStorage.getItem("partyPopperImage");
+        let partyPopperEnabled = localStorage.getItem("partyPopperEnabled") === "true";
 
-        function updateCurrentTimeText() {
-            document.getElementById("currentTimeText").textContent = `⏰ Hora mágica actual: ${String(targetHour).padStart(2, '0')}:${String(targetMinute).padStart(2, '0')}:${String(targetSecond).padStart(2, '0')}`;
-        }
+        // Custom Background Image Base64
+        let customBackgroundImageBase64 = localStorage.getItem("customBackgroundImage");
+
+
+        // --- Core Functions ---
 
         function updateClock() {
             const now = new Date();
@@ -415,73 +571,79 @@
             const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
             clockEl.textContent = `${h}:${m}:${s}`;
-            updateCountdown(now);
 
-            const currentTime = now.getTime();
-            const target = new Date();
-            target.setHours(targetHour, targetMinute, targetSecond, 0);
-            if (now > target) {
-                 // If the target time is in the past today, set it for tomorrow
-                 target.setDate(target.getDate() + 1);
-            }
-             // If the target time is exactly midnight (00:00:00) and it's already past midnight,
-             // we still want it for tomorrow. The above 'now > target' covers this unless target was originally > now.
-             // Let's refine the target date setting to be more robust:
-             const todayTarget = new Date(now); // Start with today's date
-             todayTarget.setHours(targetHour, targetMinute, targetSecond, 0);
-
-             let diff = todayTarget - now;
-
-             // If today's target is in the past or very close (within a second or two),
-             // calculate the difference to tomorrow's target instead.
-             if (diff <= -1000) { // Use -1000ms to account for potential timing drift
-                 const tomorrowTarget = new Date(now);
-                 tomorrowTarget.setDate(tomorrowTarget.getDate() + 1);
-                 tomorrowTarget.setHours(targetHour, targetMinute, targetSecond, 0);
-                 diff = tomorrowTarget - now;
-             }
-
-
-            const diffInSeconds = Math.floor(diff / 1000);
+            let nextAlarmTime = null;
+            let timeToNextAlarm = Infinity;
+            let triggeredAlarm = null;
 
             document.body.classList.remove("shake-light", "shake-medium", "shake-strong");
-            if (diffInSeconds <= 10 && diffInSeconds > 6) document.body.classList.add("shake-light");
-            else if (diffInSeconds <= 6 && diffInSeconds > 3) document.body.classList.add("shake-medium");
-            else if (diffInSeconds <= 3 && diffInSeconds > 0) document.body.classList.add("shake-strong");
 
-            // Check for trigger exactly at the magic hour second
-             if (diffInSeconds === 0 && !confettiActive) {
+            alarms.forEach(alarm => {
+                const target = new Date();
+                target.setHours(alarm.hour, alarm.minute, alarm.second, 0);
+
+                let diff = target.getTime() - now.getTime();
+
+                // If today's target is in the past, set it for tomorrow
+                if (diff < -500) { // Si es más de 0.5 segundos en el pasado
+                    target.setDate(target.getDate() + 1);
+                    diff = target.getTime() - now.getTime();
+                }
+
+                // Check for immediate trigger (within the current second, allowing for minor timing delays)
+                if (diff >= -500 && diff <= 500 && !alarm.triggeredThisSecond) { // Trigger if within +/- 0.5s of target
+                    triggeredAlarm = alarm;
+                    alarm.triggeredThisSecond = true; // Mark as triggered for this second
+                } else if (diff > 500) { // Reset trigger flag if the time has passed and we're looking at the future again
+                    alarm.triggeredThisSecond = false;
+                }
+
+                // Find the next upcoming alarm (only consider future alarms)
+                if (diff > 0 && diff < timeToNextAlarm) {
+                    timeToNextAlarm = diff;
+                    nextAlarmTime = target;
+                }
+            });
+
+            if (triggeredAlarm && !confettiActive) {
                 confettiActive = true;
                 showMessage();
-                showBanner();
+                showBanner(triggeredAlarm.message || currentCustomBannerText);
                 launchConfetti();
                 launchFireworks();
+                if (partyPopperEnabled && partyPopperImageBase64) {
+                    launchPartyPoppers(partyPopperImageBase64);
+                }
+                document.body.classList.remove("shake-light", "shake-medium", "shake-strong"); // Quitar el shake cuando se activa
+            } else if (!triggeredAlarm && confettiActive) {
+                if (timeToNextAlarm > 1000) { // Si la siguiente alarma está a más de 1 segundo
+                    confettiActive = false;
+                }
+            }
+
+
+            if (nextAlarmTime) {
+                updateCountdown(now, nextAlarmTime);
+                const secondsUntilNextAlarm = Math.floor(timeToNextAlarm / 1000);
+
+                // El shake se mantiene hasta que el segundo es 0
+                if (secondsUntilNextAlarm <= 10 && secondsUntilNextAlarm > 6) document.body.classList.add("shake-light");
+                else if (secondsUntilNextAlarm <= 6 && secondsUntilNextAlarm > 3) document.body.classList.add("shake-medium");
+                else if (secondsUntilNextAlarm <= 3 && secondsUntilNextAlarm >= 0) document.body.classList.add("shake-strong"); // Shake fuerte hasta el segundo 0
+                else document.body.classList.remove("shake-light", "shake-medium", "shake-strong");
+            } else {
+                countdownEl.textContent = "No hay horas mágicas programadas.";
                 document.body.classList.remove("shake-light", "shake-medium", "shake-strong");
-            } else if (diffInSeconds > 0) {
-                 // Reset confettiActive when the time is in the future again
-                 confettiActive = false;
-             }
+            }
         }
 
-        function updateCountdown(now) {
-             const target = new Date();
-             target.setHours(targetHour, targetMinute, targetSecond, 0);
-
-             let diff = target - now;
-
-             // If today's target is in the past or very close (within a second or two),
-             // calculate the difference to tomorrow's target instead.
-             if (diff <= -1000) {
-                 const tomorrowTarget = new Date(now);
-                 tomorrowTarget.setDate(tomorrowTarget.getDate() + 1);
-                 tomorrowTarget.setHours(targetHour, targetMinute, targetSecond, 0);
-                 diff = tomorrowTarget - now;
-             }
+        function updateCountdown(now, targetTime) {
+            let diff = targetTime - now;
 
             const hours = String(Math.floor(diff / 1000 / 60 / 60)).padStart(2, '0');
             const minutes = String(Math.floor((diff / 1000 / 60) % 60)).padStart(2, '0');
             const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
-            countdownEl.textContent = `Faltan ${hours}:${minutes}:${seconds} para la hora mágica`;
+            countdownEl.textContent = `Faltan ${hours}:${minutes}:${seconds} para la próxima Hora Mágica`;
         }
 
 
@@ -489,12 +651,11 @@
             messageEl.classList.add("show");
             setTimeout(() => {
                 messageEl.classList.remove("show");
-                // confettiActive is handled by updateClock when diffInSeconds > 0
             }, 10000);
         }
 
-        function showBanner() {
-            bannerEl.textContent = `🚩 ${customBannerText} 🚩`;
+        function showBanner(message) {
+            bannerEl.textContent = `🚩 ${message} 🚩`;
             bannerEl.classList.add("show");
             setTimeout(() => bannerEl.classList.remove("show"), 10000);
         }
@@ -550,8 +711,8 @@
             }
 
             function animate() {
-                ctx.fillStyle = "rgba(0, 0, 0, 0)"; // Use transparent fill
-                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous frame
+                ctx.fillStyle = "rgba(0, 0, 0, 0)";
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                 for (let i = rockets.length - 1; i >= 0; i--) {
                     const r = rockets[i];
@@ -562,22 +723,20 @@
                     ctx.fillStyle = "white";
                     ctx.arc(r.x, r.y, 2, 0, Math.PI * 2);
                     ctx.fill();
-                    if (!r.exploded && r.vy >= 0) { // Explode when starting to fall
+                    if (!r.exploded && r.vy >= 0) {
                         explode(r.x, r.y);
                         r.exploded = true;
+                    }
+                    if (r.y > canvas.height || r.exploded) {
                         rockets.splice(i, 1);
                     }
-                     // Remove rockets that go off screen or have exploded
-                     if (r.y > canvas.height || r.x < 0 || r.x > canvas.width || r.exploded) {
-                         rockets.splice(i, 1);
-                     }
                 }
 
                 for (let i = particles.length - 1; i >= 0; i--) {
                     const p = particles[i];
                     p.x += p.vx;
                     p.y += p.vy;
-                    p.vy += 0.05; // Gravity for particles
+                    p.vy += 0.05;
                     p.life--;
                     ctx.beginPath();
                     ctx.fillStyle = p.color;
@@ -589,62 +748,192 @@
                     }
                 }
 
-                ctx.globalAlpha = 1; // Reset alpha for drawing
-                 // Add new rockets periodically during the active duration
-                 if (Date.now() < endTime && Math.random() < 0.05) { // Reduced rocket creation rate
-                     createRocket();
-                 }
+                ctx.globalAlpha = 1;
+                if (Date.now() < endTime && Math.random() < 0.05) {
+                    createRocket();
+                }
 
-                 // Continue animation if still within duration or particles/rockets exist
                 if (Date.now() < endTime || particles.length > 0 || rockets.length > 0) {
                     requestAnimationFrame(animate);
                 } else {
                     canvas.style.display = "none";
-                    ctx.clearRect(0, 0, canvas.width, canvas.height); // Final clear
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
                 }
             }
 
-             // Start the fireworks animation
-            createRocket(); // Start with at least one rocket
+            createRocket();
             animate();
         }
 
+        // --- Panel Toggling Functions ---
 
         function toggleSettings() {
-             // Hide calendar panel if open
-             if (calendarPanel.style.display === "flex") {
-                 calendarPanel.style.display = "none";
-             }
+            calendarPanel.style.display = "none";
+            alarmsPanel.style.display = "none";
             settingsPanel.style.display = settingsPanel.style.display === "flex" ? "none" : "flex";
+            if (settingsPanel.style.display === "flex") {
+                commandInput.value = currentCustomBannerText;
+                updateCurrentTimeText();
+                partyPopperToggle.checked = partyPopperEnabled;
+            }
         }
 
-        // New function to toggle calendar panel
         function toggleCalendar() {
-             // Hide settings panel if open
-             if (settingsPanel.style.display === "flex") {
-                 settingsPanel.style.display = "none";
-             }
-             calendarPanel.style.display = calendarPanel.style.display === "flex" ? "none" : "flex";
-             if (calendarPanel.style.display === "flex") {
-                 renderCalendar(currentMonth, currentYear); // Render when opening
-             }
+            settingsPanel.style.display = "none";
+            alarmsPanel.style.display = "none";
+            calendarPanel.style.display = calendarPanel.style.display === "flex" ? "none" : "flex";
+            if (calendarPanel.style.display === "flex") {
+                renderCalendar(currentMonth, currentYear);
+            }
+        }
+
+        function toggleAlarms() {
+            settingsPanel.style.display = "none";
+            calendarPanel.style.display = "none";
+            alarmsPanel.style.display = alarmsPanel.style.display === "flex" ? "none" : "flex";
+            if (alarmsPanel.style.display === "flex") {
+                renderAlarms();
+            }
+        }
+
+        // --- Settings Functions ---
+
+        function saveCustomBannerText() {
+            const input = commandInput.value.trim();
+            if (input) {
+                currentCustomBannerText = input;
+                localStorage.setItem("bannerText", currentCustomBannerText);
+                alert("Mensaje por defecto para la Hora Mágica guardado.");
+            }
+            toggleSettings();
+        }
+
+        function updateCurrentTimeText() {
+            document.getElementById("currentTimeText").textContent = `🛠️ Ajustes de la aplicación`;
         }
 
         function toggleRGBBackground() {
             const enabled = bgToggle.checked;
             document.body.classList.toggle("animated-bg", enabled);
             localStorage.setItem("animatedBG", enabled);
-        }
 
-        function loadBackgroundSetting() {
-            const saved = localStorage.getItem("animatedBG");
-            if (saved === "true") {
-                document.body.classList.add("animated-bg");
-                bgToggle.checked = true;
+            if (enabled) {
+                 // Si el fondo animado está activado, la imagen de fondo explícita se quita
+                 document.body.style.backgroundImage = '';
+            } else if (customBackgroundImageBase64) {
+                 document.body.style.backgroundImage = `url('${customBackgroundImageBase64}')`;
+            } else {
+                // Si ninguna está activada, se asegura que la imagen de fondo esté vacía
+                // para que el linear-gradient del CSS por defecto del body se aplique.
+                document.body.style.backgroundImage = '';
             }
         }
 
-        // Calendar Rendering Functions
+        function loadBackgroundSetting() {
+            const savedAnimated = localStorage.getItem("animatedBG");
+            customBackgroundImageBase64 = localStorage.getItem("customBackgroundImage");
+
+            if (savedAnimated === "true") {
+                document.body.classList.add("animated-bg");
+                bgToggle.checked = true;
+                document.body.style.backgroundImage = ''; // Asegura que no haya imagen custom cuando RGB está activo
+            } else if (customBackgroundImageBase64) {
+                document.body.style.backgroundImage = `url('${customBackgroundImageBase64}')`;
+                bgToggle.checked = false; // Asegura que el checkbox RGB esté desactivado si hay imagen custom
+            } else {
+                document.body.style.backgroundImage = ''; // Asegura que el linear-gradient por defecto del CSS esté visible
+                document.body.classList.remove("animated-bg"); // Asegura que la clase animated-bg esté removida
+                bgToggle.checked = false;
+            }
+        }
+
+        function uploadCustomBackground(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    customBackgroundImageBase64 = e.target.result;
+                    localStorage.setItem("customBackgroundImage", customBackgroundImageBase64);
+                    bgToggle.checked = false;
+                    document.body.classList.remove("animated-bg");
+                    localStorage.setItem("animatedBG", false);
+
+                    document.body.style.backgroundImage = `url('${customBackgroundImageBase64}')`;
+                    alert("Imagen de fondo personalizada guardada.");
+                };
+                reader.readAsDataURL(file);
+            }
+            event.target.value = '';
+        }
+
+        function clearCustomBackground() {
+            localStorage.removeItem("customBackgroundImage");
+            customBackgroundImageBase64 = null;
+            alert("Imagen de fondo personalizada eliminada.");
+
+            const savedAnimated = localStorage.getItem("animatedBG");
+            if (savedAnimated === "true") {
+                document.body.classList.add("animated-bg");
+                document.body.style.backgroundImage = ''; // Limpiar imagen explícita si RGB está activo
+            } else {
+                document.body.style.backgroundImage = ''; // Esto hará que el linear-gradient por defecto del CSS sea visible
+            }
+            bgToggle.checked = (savedAnimated === "true"); // Sincroniza el estado del checkbox
+        }
+
+
+        // --- Party Poppers Functions ---
+
+        function savePartyPopperSetting() {
+            partyPopperEnabled = partyPopperToggle.checked;
+            localStorage.setItem("partyPopperEnabled", partyPopperEnabled);
+        }
+
+        function uploadPartyPopperImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    partyPopperImageBase64 = e.target.result;
+                    localStorage.setItem("partyPopperImage", partyPopperImageBase64);
+                    alert("Imagen para animación de fiesta guardada.");
+                };
+                reader.readAsDataURL(file);
+            }
+            event.target.value = '';
+        }
+
+        function launchPartyPoppers(imageUrl) {
+            const popperCount = 50; // Más poppers
+            const duration = 10000;
+            const container = document.body;
+            
+            for (let i = 0; i < popperCount; i++) {
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.classList.add('party-popper-image');
+
+                // Posiciona la imagen inicialmente en el centro, con un poco de aleatoriedad
+                img.style.left = `calc(50% + ${Math.random() * 400 - 200}px)`; // Dispersion horizontal en el centro
+                img.style.bottom = `0px`; // Empieza desde la parte inferior
+
+                img.style.animationDelay = `${Math.random() * 0.5}s`;
+                img.style.animationDuration = `${duration / 1000 + Math.random() * 2}s`;
+                
+                // Aplica una rotación inicial aleatoria
+                img.style.transform = `translateX(-50%) rotate(${Math.random() * 360}deg)`; 
+                
+                container.appendChild(img);
+
+                setTimeout(() => {
+                    img.remove();
+                }, duration + 2000);
+            }
+        }
+
+
+        // --- Calendar Rendering Functions ---
+
         function renderCalendar(month, year) {
             const firstDayOfMonth = new Date(year, month, 1);
             const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -653,16 +942,12 @@
             const currentMonthOfYear = today.getMonth();
             const currentYearFull = today.getFullYear();
 
-            // Calculate the starting day of the week (0=Sun, 1=Mon, ..., 6=Sat)
-            let startDayOfWeek = firstDayOfMonth.getDay(); // 0 for Sunday
-            // Adjust for Monday start (1=Mon, ..., 0=Sun)
+            let startDayOfWeek = firstDayOfMonth.getDay();
             startDayOfWeek = (startDayOfWeek === 0) ? 6 : startDayOfWeek - 1;
 
-
             monthYearEl.textContent = `${monthNames[month]} ${year}`;
-            calendarDaysEl.innerHTML = ''; // Clear previous days
+            calendarDaysEl.innerHTML = '';
 
-            // Add padding days from previous month
             const prevMonthLastDay = new Date(year, month, 0).getDate();
             for (let i = startDayOfWeek; i > 0; i--) {
                 const dayEl = document.createElement('div');
@@ -671,40 +956,27 @@
                 calendarDaysEl.appendChild(dayEl);
             }
 
-            // Add days of the current month
             for (let i = 1; i <= daysInMonth; i++) {
                 const dayEl = document.createElement('div');
                 dayEl.classList.add('calendar-day');
                 dayEl.textContent = i;
 
-                // Highlight current day
                 if (year === currentYearFull && month === currentMonthOfYear && i === currentDayOfMonth) {
                     dayEl.classList.add('current-day');
                 }
-
-                // Optional: Add a click handler if you want to select dates
-                // dayEl.addEventListener('click', () => {
-                //     console.log(`Selected: ${year}-${month + 1}-${i}`);
-                //     // Add your date selection logic here
-                // });
-
                 calendarDaysEl.appendChild(dayEl);
             }
 
-            // Add padding days from next month
             const totalDaysDisplayed = startDayOfWeek + daysInMonth;
-            const remainingDays = 42 - totalDaysDisplayed; // Max cells needed (6 rows * 7 days) or 35 (5 rows)
-             // A calendar can have 4, 5, or 6 weeks. Let's fill up to 6 weeks (42 cells) for consistent grid display.
-             const cellsToFill = 42 - (totalDaysDisplayed % 7 === 0 ? 7 : totalDaysDisplayed % 7) ; // Fill up to the next full week, max 6 rows
-             if (totalDaysDisplayed + cellsToFill < 35) cellsToFill += 7; // Ensure at least 5 rows
-             if (totalDaysDisplayed + cellsToFill < 42 && totalDaysDisplayed > 35) cellsToFill += 7; // Ensure 6 rows if needed
+            let cellsToFill = 42 - totalDaysDisplayed;
+            if (cellsToFill < 0) cellsToFill = cellsToFill % 7 + 7;
 
             for (let i = 1; i <= cellsToFill; i++) {
-                 const dayEl = document.createElement('div');
-                 dayEl.classList.add('calendar-day', 'other-month');
-                 dayEl.textContent = i;
-                 calendarDaysEl.appendChild(dayEl);
-             }
+                const dayEl = document.createElement('div');
+                dayEl.classList.add('calendar-day', 'other-month');
+                dayEl.textContent = i;
+                calendarDaysEl.appendChild(dayEl);
+            }
         }
 
         function prevMonth() {
@@ -719,14 +991,154 @@
             renderCalendar(currentMonth, currentYear);
         }
 
+        // --- Alarms Management Functions ---
 
-        loadCustomTime();
-        loadBackgroundSetting();
-        setInterval(updateClock, 1000);
-        updateClock(); // Initial call to display time immediately
+        function addAlarm() {
+            const name = document.getElementById("newAlarmName").value.trim();
+            const hour = parseInt(document.getElementById("newAlarmHour").value);
+            const minute = parseInt(document.getElementById("newAlarmMinute").value);
+            const second = parseInt(document.getElementById("newAlarmSecond").value);
+            const message = document.getElementById("newAlarmMessage").value.trim();
 
-        // Initial calendar render (can be done when the panel is first opened instead)
-        // renderCalendar(currentMonth, currentYear); // Removed immediate render on load
+            if (!name || isNaN(hour) || isNaN(minute) || isNaN(second)) {
+                alert("Por favor, rellena los campos 'Nombre', 'Hora', 'Minuto' y 'Segundo' de la Hora Mágica.");
+                return;
+            }
+
+            if (hour < 0 || hour > 23 || minute < 0 || minute > 59 || second < 0 || second > 59) {
+                alert("La hora, minuto o segundo no son válidos.");
+                return;
+            }
+
+            const newAlarm = {
+                id: Date.now(),
+                name,
+                hour,
+                minute,
+                second,
+                message: message || currentCustomBannerText,
+                triggeredThisSecond: false
+            };
+
+            alarms.push(newAlarm);
+            saveAlarms();
+            renderAlarms();
+            document.getElementById("newAlarmName").value = '';
+            document.getElementById("newAlarmHour").value = '17';
+            document.getElementById("newAlarmMinute").value = '30';
+            document.getElementById("newAlarmSecond").value = '00';
+            document.getElementById("newAlarmMessage").value = '';
+        }
+
+        function saveAlarms() {
+            localStorage.setItem("alarms", JSON.stringify(alarms));
+        }
+
+        function renderAlarms() {
+            alarmsListEl.innerHTML = '';
+
+            if (alarms.length === 0) {
+                alarmsListEl.innerHTML = '<p style="text-align: center; color: #888;">No hay horas mágicas guardadas.</p>';
+                return;
+            }
+
+            const sortedAlarms = [...alarms].sort((a, b) => {
+                if (a.hour !== b.hour) return a.hour - b.hour;
+                if (a.minute !== b.minute) return a.minute - b.minute;
+                return a.second - b.second;
+            });
+
+
+            sortedAlarms.forEach(alarm => {
+                const alarmDiv = document.createElement('div');
+                alarmDiv.classList.add('alarm-entry');
+                alarmDiv.dataset.id = alarm.id;
+
+                const formattedTime = `${String(alarm.hour).padStart(2, '0')}:${String(alarm.minute).padStart(2, '0')}:${String(alarm.second).padStart(2, '0')}`;
+
+                alarmDiv.innerHTML = `
+                    <div>
+                        <span class="alarm-name">${alarm.name}</span>
+                        <span class="alarm-time">${formattedTime}</span>
+                    </div>
+                    <div>
+                        <small style="color: #aaa;">Mensaje: ${alarm.message}</small>
+                    </div>
+                    <div class="alarm-actions">
+                        <button onclick="editAlarm(${alarm.id})">Editar</button>
+                        <button class="delete-btn" onclick="deleteAlarm(${alarm.id})">Eliminar</button>
+                    </div>
+                `;
+                alarmsListEl.appendChild(alarmDiv);
+            });
+        }
+
+        function editAlarm(id) {
+            const alarmIndex = alarms.findIndex(a => a.id === id);
+            if (alarmIndex > -1) {
+                const alarm = alarms[alarmIndex];
+                const newName = prompt("Editar nombre de la Hora Mágica:", alarm.name);
+                if (newName === null) return;
+
+                const newTime = prompt(`Editar hora de la Hora Mágica (HH:MM:SS), actual: ${String(alarm.hour).padStart(2, '0')}:${String(alarm.minute).padStart(2, '0')}:${String(alarm.second).padStart(2, '0')}`);
+                if (newTime === null) return;
+
+                const newMsg = prompt("Editar mensaje de la Hora Mágica:", alarm.message);
+                if (newMsg === null) return;
+
+                const timeParts = newTime.split(':').map(Number);
+                if (timeParts.length === 3 && !isNaN(timeParts[0]) && !isNaN(timeParts[1]) && !isNaN(timeParts[2]) &&
+                    timeParts[0] >= 0 && timeParts[0] <= 23 &&
+                    timeParts[1] >= 0 && timeParts[1] <= 59 &&
+                    timeParts[2] >= 0 && timeParts[2] <= 59)
+                {
+                    alarms[alarmIndex].name = newName.trim() || alarm.name;
+                    alarms[alarmIndex].hour = timeParts[0];
+                    alarms[alarmIndex].minute = timeParts[1];
+                    alarms[alarmIndex].second = timeParts[2];
+                    alarms[alarmIndex].message = newMsg.trim() || currentCustomBannerText;
+                    saveAlarms();
+                    renderAlarms();
+                } else {
+                    alert("Formato de hora inválido. Usa HH:MM:SS (ej: 17:30:00)");
+                }
+            }
+        }
+
+        function deleteAlarm(id) {
+            if (confirm("¿Estás seguro de que quieres eliminar esta Hora Mágica?")) {
+                const alarmIndex = alarms.findIndex(alarm => alarm.id === id);
+                if (alarmIndex > -1) {
+                    // Evitar eliminar la alarma predeterminada si su nombre y hora coinciden
+                    const defaultAlarm = { name: "Hora de irse", hour: 13, minute: 39, second: 40 };
+                    const isDefaultAlarm = (
+                        alarms[alarmIndex].name === defaultAlarm.name &&
+                        alarms[alarmIndex].hour === defaultAlarm.hour &&
+                        alarms[alarmIndex].minute === defaultAlarm.minute &&
+                        alarms[alarmIndex].second === defaultAlarm.second
+                    );
+
+                    if (isDefaultAlarm) {
+                        alert("La alarma 'Hora de irse' es predeterminada y no puede ser eliminada.");
+                    } else {
+                        alarms = alarms.filter(alarm => alarm.id !== id);
+                        saveAlarms();
+                        renderAlarms();
+                    }
+                }
+            }
+        }
+
+        // --- Initial Load ---
+        // Se ejecuta cuando el DOM está completamente cargado
+        document.addEventListener('DOMContentLoaded', (event) => {
+            loadBackgroundSetting();
+            partyPopperToggle.checked = partyPopperEnabled;
+            commandInput.value = currentCustomBannerText;
+            renderAlarms();
+            setInterval(updateClock, 1000);
+            updateClock();
+        });
     </script>
     <div class="footer-instagram">
         <img src="instagram.png" alt="Instagram" class="instagram-icon">
