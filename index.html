@@ -437,7 +437,7 @@
 
     <div class="clock">--:--:--</div>
     <div class="countdown">Calculando tiempo restante...</div>
-    <div class="message" id="message">🎉 ¡Hora Mágica! 🎉</div>
+    <div class="message" id="message">🎉 ¡Hora de irse! 🎉</div>
 
     <div class="icon-button alarms-icon" onclick="toggleAlarms()">⏰</div>
     <div class="icon-button calendar-icon" onclick="toggleCalendar()">📅</div>
@@ -643,7 +643,7 @@
             const hours = String(Math.floor(diff / 1000 / 60 / 60)).padStart(2, '0');
             const minutes = String(Math.floor((diff / 1000 / 60) % 60)).padStart(2, '0');
             const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
-            countdownEl.textContent = `Faltan ${hours}:${minutes}:${seconds} para la próxima Hora Mágica`;
+            countdownEl.textContent = `Faltan ${hours}:${minutes}:${seconds} para la próxima hora mágica`;
         }
 
 
