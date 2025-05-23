@@ -380,33 +380,93 @@
             event.target.value = '';
         }
 
-        function launchPartyPoppers(imageUrl) {
-            const popperCount = 50; // Más poppers
-            const duration = 10000;
-            const container = document.body;
-            
-            for (let i = 0; i < popperCount; i++) {
-                const img = document.createElement('img');
-                img.src = imageUrl;
-                img.classList.add('party-popper-image');
+       function launchPartyPoppers(imageUrl) {
+    const popperCount = 5; // La cantidad de imágenes
+    const animationTotalDuration = 10000; // Duración total que los party poppers estarán en pantalla (10 segundos)
+    const fadeOutStartPercentage = 0.8; // Porcentaje de la duración donde empieza el desvanecimiento (80%)
+    const imageSize = 50; // Tamaño en píxeles de la imagen del popper (ajústalo si tus imágenes son de otro tamaño)
+    const minSpeed = 2; // Velocidad mínima en píxeles por frame
+    const maxSpeed = 5; // Velocidad máxima en píxeles por frame
 
-                // Posiciona la imagen inicialmente en el centro, con un poco de aleatoriedad
-                img.style.left = `calc(50% + ${Math.random() * 400 - 200}px)`; // Dispersion horizontal en el centro
-                img.style.bottom = `0px`; // Empieza desde la parte inferior
+    const container = document.body;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
 
-                img.style.animationDelay = `${Math.random() * 0.5}s`;
-                img.style.animationDuration = `${duration / 1000 + Math.random() * 2}s`;
-                
-                // Aplica una rotación inicial aleatoria
-                img.style.transform = `translateX(-50%) rotate(${Math.random() * 360}deg)`; 
-                
-                container.appendChild(img);
+    for (let i = 0; i < popperCount; i++) {
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.classList.add('party-popper-image'); // Asegúrate de que tu CSS tiene esta clase con la rotación y opacidad
 
-                setTimeout(() => {
-                    img.remove();
-                }, duration + 2000);
+        // **CAMBIO CLAVE AQUÍ:** Posición inicial completamente aleatoria en la pantalla
+        // Esto asegura que cada popper aparezca en un lugar distinto al inicio
+        let currentX = Math.random() * (viewportWidth - imageSize);
+        let currentY = Math.random() * (viewportHeight - imageSize);
+
+        // Velocidad y dirección inicial aleatoria
+        let dx = (Math.random() < 0.5 ? 1 : -1) * (minSpeed + Math.random() * (maxSpeed - minSpeed));
+        let dy = (Math.random() < 0.5 ? 1 : -1) * (minSpeed + Math.random() * (maxSpeed - minSpeed));
+
+        // Aplicamos la rotación y la duración general de la animación (para el fade-out)
+        img.style.animation = `floatAndSwing ${animationTotalDuration / 1000}s linear forwards`;
+        img.style.animationDelay = `${Math.random() * 0.5}s`; // Pequeño retraso para que no salgan todas a la vez
+
+        container.appendChild(img);
+
+        let animationFrameId;
+        const startTime = Date.now();
+
+        function animatePopper() {
+            const elapsedTime = Date.now() - startTime;
+
+            // Calcular y aplicar opacidad para el desvanecimiento suave
+            const progress = elapsedTime / animationTotalDuration;
+            if (progress >= fadeOutStartPercentage) {
+                const fadeProgress = (progress - fadeOutStartPercentage) / (1 - fadeOutStartPercentage);
+                img.style.opacity = (1 - fadeProgress).toString();
+            } else {
+                img.style.opacity = '1';
+            }
+
+            // Actualizar posición de la imagen
+            currentX += dx;
+            currentY += dy;
+
+            // Lógica de rebote en los bordes horizontales
+            if (currentX + imageSize > viewportWidth) {
+                currentX = viewportWidth - imageSize;
+                dx *= -1;
+            } else if (currentX < 0) {
+                currentX = 0;
+                dx *= -1;
+            }
+
+            // Lógica de rebote en los bordes verticales
+            if (currentY + imageSize > viewportHeight) {
+                currentY = viewportHeight - imageSize;
+                dy *= -1;
+            } else if (currentY < 0) {
+                currentY = 0;
+                dy *= -1;
+            }
+
+            // Aplicar la nueva posición al estilo del elemento
+            img.style.left = `${currentX}px`;
+            img.style.top = `${currentY}px`;
+
+            // Continuar la animación si no ha terminado la duración total
+            if (elapsedTime < animationTotalDuration) {
+                animationFrameId = requestAnimationFrame(animatePopper);
+            } else {
+                img.remove();
             }
         }
+
+        // Iniciar el bucle de animación para este popper
+        setTimeout(() => {
+            animationFrameId = requestAnimationFrame(animatePopper);
+        }, Math.random() * 500);
+    }
+}
 
 
         // --- Calendar Rendering Functions ---
@@ -581,6 +641,65 @@
                 }
             }
         }
+
+        // Función para activar la secuencia de la hora mágica manualmente
+// Función para activar la secuencia de la hora mágica manualmente
+// Función para activar la secuencia de la hora mágica manualmente
+function triggerMagicHour() {
+    // Si la hora mágica ya está activa, no hacemos nada para evitar duplicados.
+    // Comprobamos la clase principal de shake y si el banner ya está visible.
+    if (document.body.classList.contains('shake-strong') || bannerEl.classList.contains('show')) {
+        console.log("La hora mágica ya está activa. Espera a que termine para probarla de nuevo.");
+        return;
+    }
+
+    console.log("Activando secuencia de Hora Mágica manualmente: Shake inicial de 5s, luego efectos por 10s.");
+
+    const initialShakeDuration = 500; //
+    const effectsDuration = 10000; // 10 segundos para los demás efectos
+
+    // 1. Activa el shake fuerte inmediatamente
+    document.body.classList.add('shake-strong');
+
+    // 2. Temporizador para detener el shake después de 5 segundos y lanzar los otros efectos
+    setTimeout(() => {
+        // Quita la clase de shake después de los 5 segundos
+        document.body.classList.remove('shake-strong');
+        document.body.classList.remove('shake-medium'); // Asegúrate de quitar todas las clases de shake
+        document.body.classList.remove('shake-light');
+
+        // Lanza todos los efectos visuales (mensaje, banner, confeti, fuegos artificiales, party popper)
+        messageEl.classList.add('show');
+        showBanner(currentCustomBannerText);
+        launchConfetti();
+        launchFireworks();
+        if (partyPopperEnabled && partyPopperImageBase64) {
+            launchPartyPoppers(partyPopperImageBase64);
+        }
+
+        // 3. Temporizador para limpiar todos los efectos después de su duración (10 segundos)
+        setTimeout(() => {
+            messageEl.classList.remove('show');
+            bannerEl.classList.remove('show');
+            
+            // Asegúrate de que el canvas de fuegos artificiales se limpie y oculte
+            const canvas = document.getElementById("fireworksCanvas");
+            if (canvas) {
+                canvas.style.display = "none";
+                const ctx = canvas.getContext("2d");
+                if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // Quita las imágenes de party popper si aún existen (aunque ya tienen su animación de fade)
+            const allPartyPopperImages = document.querySelectorAll('.party-popper-image');
+            allPartyPopperImages.forEach(img => img.remove());
+            
+            // Reinicia la bandera de confeti para permitir una nueva activación
+            confettiActive = false;
+
+        }, effectsDuration); // Los efectos duran 10 segundos después de ser lanzados
+    }, initialShakeDuration); // El shake dura 5 segundos antes de lanzar los efectos
+}
 
         function deleteAlarm(id) {
             if (confirm("¿Estás seguro de que quieres eliminar esta Hora Mágica?")) {
