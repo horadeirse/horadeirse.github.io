@@ -389,9 +389,9 @@
         }
 
         .party-popper-image {
-            position: fixed;
-            width: 300px; /* ¡Ahora es gigante! */
-            height: 300px; /* ¡Ahora es gigante! */
+            position: absolute;
+            width: 600px; /* ¡Ahora es gigante! */
+            height: 600px; /* ¡Ahora es gigante! */
             object-fit: contain;
             pointer-events: none;
             z-index: 9998;
@@ -399,13 +399,35 @@
         }
 
         /* Nueva animación para el movimiento combinado de flotar y balancearse */
-        @keyframes floatAndSwing {
-            0% { opacity: 1; transform: translate(-50%, 0) rotate(0deg); left: 50%; }
-            25% { transform: translate(-75%, -150px) rotate(90deg); left: 25%; } /* Se mueve a la izquierda y sube */
-            50% { transform: translate(-50%, -300px) rotate(180deg); left: 50%; } /* Vuelve al centro y sube más */
-            75% { transform: translate(-25%, -150px) rotate(270deg); left: 75%; } /* Se mueve a la derecha y baja un poco */
-            100% { opacity: 0; transform: translate(-50%, -600px) rotate(360deg); left: 50%; } /* Flota hacia arriba y desaparece */
-        }
+      @keyframes floatAndSwing {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, 0) rotate(0deg);
+        left: 50%;
+    }
+    25% {
+        transform: translate(-75%, -150px) rotate(90deg);
+        left: 25%;
+    }
+    50% {
+        transform: translate(-50%, -300px) rotate(180deg);
+        left: 50%;
+    }
+    70% { /* Mantenemos opacidad total hasta un poco antes */
+        opacity: 1;
+        transform: translate(-25%, -150px) rotate(270deg);
+        left: 75%;
+    }
+    85% { /* Inicia el desvanecimiento y acelera */
+        opacity: 0.2; /* Menos opacidad más rápido */
+        transform: translate(-50%, -450px) rotate(315deg); /* Continúa movimiento */
+    }
+    100% {
+        opacity: 0; /* Aseguramos que la opacidad sea 0 al final de la animación */
+        transform: translate(-50%, -600px) rotate(360deg);
+        left: 50%;
+    }
+}
 
 
         /* Removido el display: none !important para elementos no-mobile */
@@ -470,7 +492,10 @@
             <div class="file-input-wrapper">
                 <span>Subir Imagen</span>
                 <input type="file" id="partyPopperImageUpload" accept="image/*" onchange="uploadPartyPopperImage(event)" />
-            </div>
+            </div> <br>
+            <div class="settings">
+            <button onclick="triggerMagicHour()">Probar Hora Mágica</button>
+        </div>
         </div>
         <div class="current-time" id="currentTimeText"></div>
     </div>
@@ -502,8 +527,8 @@
         </div>
         <div class="settings">
             <label>Hora:</label>
-            <input type="number" id="newAlarmHour" min="0" max="23" value="17" />
-            <input type="number" id="newAlarmMinute" min="0" max="59" value="30" />
+            <input type="number" id="newAlarmHour" min="0" max="23" value="00" />
+            <input type="number" id="newAlarmMinute" min="0" max="59" value="00" />
             <input type="number" id="newAlarmSecond" min="0" max="59" value="00" />
         </div>
         <div class="settings">
