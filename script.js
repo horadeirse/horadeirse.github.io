@@ -18,29 +18,28 @@
         let currentCustomBannerText = localStorage.getItem("bannerText") || "¡Es la Hora Mágica!";
         let confettiActive = false;
 
-        // Calendar variables
+
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
         const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
-        // Alarms Array
-        // Se carga del localStorage, si no existe, se inicializa con la alarma por defecto
+       
         let alarms = JSON.parse(localStorage.getItem("alarms"));
-        if (!alarms || alarms.length === 0) { // Si no hay alarmas guardadas o la lista está vacía
+        if (!alarms || alarms.length === 0) { 
             alarms = [{ id: Date.now(), name: "Hora de irse", hour: 13, minute: 39, second: 40, message: "¡Hora de irse!" }];
-            saveAlarms(); // Guarda la alarma por defecto en localStorage
+            saveAlarms(); 
         }
 
 
-        // Party Popper Image and setting
+  
         let partyPopperImageBase64 = localStorage.getItem("partyPopperImage");
         let partyPopperEnabled = localStorage.getItem("partyPopperEnabled") === "true";
 
-        // Custom Background Image Base64
+      
         let customBackgroundImageBase64 = localStorage.getItem("customBackgroundImage");
 
 
-        // --- Core Functions ---
+       
 
         function updateClock() {
             const now = new Date();
@@ -61,21 +60,21 @@
 
                 let diff = target.getTime() - now.getTime();
 
-                // If today's target is in the past, set it for tomorrow
-                if (diff < -500) { // Si es más de 0.5 segundos en el pasado
+               
+                if (diff < -500) { 
                     target.setDate(target.getDate() + 1);
                     diff = target.getTime() - now.getTime();
                 }
 
-                // Check for immediate trigger (within the current second, allowing for minor timing delays)
-                if (diff >= -500 && diff <= 500 && !alarm.triggeredThisSecond) { // Trigger if within +/- 0.5s of target
+               
+                if (diff >= -500 && diff <= 500 && !alarm.triggeredThisSecond) { 
                     triggeredAlarm = alarm;
-                    alarm.triggeredThisSecond = true; // Mark as triggered for this second
-                } else if (diff > 500) { // Reset trigger flag if the time has passed and we're looking at the future again
+                    alarm.triggeredThisSecond = true; 
+                } else if (diff > 500) {
                     alarm.triggeredThisSecond = false;
                 }
 
-                // Find the next upcoming alarm (only consider future alarms)
+              
                 if (diff > 0 && diff < timeToNextAlarm) {
                     timeToNextAlarm = diff;
                     nextAlarmTime = target;
@@ -91,9 +90,9 @@
                 if (partyPopperEnabled && partyPopperImageBase64) {
                     launchPartyPoppers(partyPopperImageBase64);
                 }
-                document.body.classList.remove("shake-light", "shake-medium", "shake-strong"); // Quitar el shake cuando se activa
+                document.body.classList.remove("shake-light", "shake-medium", "shake-strong"); 
             } else if (!triggeredAlarm && confettiActive) {
-                if (timeToNextAlarm > 1000) { // Si la siguiente alarma está a más de 1 segundo
+                if (timeToNextAlarm > 1000) { 
                     confettiActive = false;
                 }
             }
@@ -103,7 +102,7 @@
                 updateCountdown(now, nextAlarmTime);
                 const secondsUntilNextAlarm = Math.floor(timeToNextAlarm / 1000);
 
-                // El shake se mantiene hasta que el segundo es 0
+             
                 if (secondsUntilNextAlarm <= 10 && secondsUntilNextAlarm > 6) document.body.classList.add("shake-light");
                 else if (secondsUntilNextAlarm <= 6 && secondsUntilNextAlarm > 3) document.body.classList.add("shake-medium");
                 else if (secondsUntilNextAlarm <= 3 && secondsUntilNextAlarm >= 0) document.body.classList.add("shake-strong"); // Shake fuerte hasta el segundo 0
@@ -242,7 +241,6 @@
             animate();
         }
 
-        // --- Panel Toggling Functions ---
 
         function toggleSettings() {
             calendarPanel.style.display = "none";
@@ -273,7 +271,7 @@
             }
         }
 
-        // --- Settings Functions ---
+      
 
         function saveCustomBannerText() {
             const input = commandInput.value.trim();
@@ -295,13 +293,13 @@
             localStorage.setItem("animatedBG", enabled);
 
             if (enabled) {
-                 // Si el fondo animado está activado, la imagen de fondo explícita se quita
+                 
                  document.body.style.backgroundImage = '';
             } else if (customBackgroundImageBase64) {
                  document.body.style.backgroundImage = `url('${customBackgroundImageBase64}')`;
             } else {
-                // Si ninguna está activada, se asegura que la imagen de fondo esté vacía
-                // para que el linear-gradient del CSS por defecto del body se aplique.
+                
+               
                 document.body.style.backgroundImage = '';
             }
         }
@@ -313,13 +311,13 @@
             if (savedAnimated === "true") {
                 document.body.classList.add("animated-bg");
                 bgToggle.checked = true;
-                document.body.style.backgroundImage = ''; // Asegura que no haya imagen custom cuando RGB está activo
+                document.body.style.backgroundImage = ''; 
             } else if (customBackgroundImageBase64) {
                 document.body.style.backgroundImage = `url('${customBackgroundImageBase64}')`;
-                bgToggle.checked = false; // Asegura que el checkbox RGB esté desactivado si hay imagen custom
+                bgToggle.checked = false;
             } else {
-                document.body.style.backgroundImage = ''; // Asegura que el linear-gradient por defecto del CSS esté visible
-                document.body.classList.remove("animated-bg"); // Asegura que la clase animated-bg esté removida
+                document.body.style.backgroundImage = '';
+                document.body.classList.remove("animated-bg"); 
                 bgToggle.checked = false;
             }
         }
@@ -351,15 +349,15 @@
             const savedAnimated = localStorage.getItem("animatedBG");
             if (savedAnimated === "true") {
                 document.body.classList.add("animated-bg");
-                document.body.style.backgroundImage = ''; // Limpiar imagen explícita si RGB está activo
+                document.body.style.backgroundImage = ''; 
             } else {
-                document.body.style.backgroundImage = ''; // Esto hará que el linear-gradient por defecto del CSS sea visible
+                document.body.style.backgroundImage = '';
             }
-            bgToggle.checked = (savedAnimated === "true"); // Sincroniza el estado del checkbox
+            bgToggle.checked = (savedAnimated === "true"); 
         }
 
 
-        // --- Party Poppers Functions ---
+
 
         function savePartyPopperSetting() {
             partyPopperEnabled = partyPopperToggle.checked;
@@ -381,12 +379,12 @@
         }
 
        function launchPartyPoppers(imageUrl) {
-    const popperCount = 5; // La cantidad de imágenes
-    const animationTotalDuration = 10000; // Duración total que los party poppers estarán en pantalla (10 segundos)
-    const fadeOutStartPercentage = 0.8; // Porcentaje de la duración donde empieza el desvanecimiento (80%)
-    const imageSize = 50; // Tamaño en píxeles de la imagen del popper (ajústalo si tus imágenes son de otro tamaño)
-    const minSpeed = 2; // Velocidad mínima en píxeles por frame
-    const maxSpeed = 5; // Velocidad máxima en píxeles por frame
+    const popperCount = 5;
+    const animationTotalDuration = 10000;
+    const fadeOutStartPercentage = 0.8;
+    const imageSize = 50;
+    const minSpeed = 2;
+    const maxSpeed = 5;
 
     const container = document.body;
     const viewportWidth = window.innerWidth;
@@ -395,20 +393,19 @@
     for (let i = 0; i < popperCount; i++) {
         const img = document.createElement('img');
         img.src = imageUrl;
-        img.classList.add('party-popper-image'); // Asegúrate de que tu CSS tiene esta clase con la rotación y opacidad
+        img.classList.add('party-popper-image');
 
-        // **CAMBIO CLAVE AQUÍ:** Posición inicial completamente aleatoria en la pantalla
-        // Esto asegura que cada popper aparezca en un lugar distinto al inicio
+
         let currentX = Math.random() * (viewportWidth - imageSize);
         let currentY = Math.random() * (viewportHeight - imageSize);
 
-        // Velocidad y dirección inicial aleatoria
+      
         let dx = (Math.random() < 0.5 ? 1 : -1) * (minSpeed + Math.random() * (maxSpeed - minSpeed));
         let dy = (Math.random() < 0.5 ? 1 : -1) * (minSpeed + Math.random() * (maxSpeed - minSpeed));
 
-        // Aplicamos la rotación y la duración general de la animación (para el fade-out)
+      
         img.style.animation = `floatAndSwing ${animationTotalDuration / 1000}s linear forwards`;
-        img.style.animationDelay = `${Math.random() * 0.5}s`; // Pequeño retraso para que no salgan todas a la vez
+        img.style.animationDelay = `${Math.random() * 0.5}s`;
 
         container.appendChild(img);
 
@@ -418,7 +415,7 @@
         function animatePopper() {
             const elapsedTime = Date.now() - startTime;
 
-            // Calcular y aplicar opacidad para el desvanecimiento suave
+          
             const progress = elapsedTime / animationTotalDuration;
             if (progress >= fadeOutStartPercentage) {
                 const fadeProgress = (progress - fadeOutStartPercentage) / (1 - fadeOutStartPercentage);
@@ -427,11 +424,11 @@
                 img.style.opacity = '1';
             }
 
-            // Actualizar posición de la imagen
+          
             currentX += dx;
             currentY += dy;
 
-            // Lógica de rebote en los bordes horizontales
+           
             if (currentX + imageSize > viewportWidth) {
                 currentX = viewportWidth - imageSize;
                 dx *= -1;
@@ -440,7 +437,7 @@
                 dx *= -1;
             }
 
-            // Lógica de rebote en los bordes verticales
+         
             if (currentY + imageSize > viewportHeight) {
                 currentY = viewportHeight - imageSize;
                 dy *= -1;
@@ -449,11 +446,11 @@
                 dy *= -1;
             }
 
-            // Aplicar la nueva posición al estilo del elemento
+          
             img.style.left = `${currentX}px`;
             img.style.top = `${currentY}px`;
 
-            // Continuar la animación si no ha terminado la duración total
+          
             if (elapsedTime < animationTotalDuration) {
                 animationFrameId = requestAnimationFrame(animatePopper);
             } else {
@@ -461,7 +458,6 @@
             }
         }
 
-        // Iniciar el bucle de animación para este popper
         setTimeout(() => {
             animationFrameId = requestAnimationFrame(animatePopper);
         }, Math.random() * 500);
@@ -469,7 +465,7 @@
 }
 
 
-        // --- Calendar Rendering Functions ---
+       
 
         function renderCalendar(month, year) {
             const firstDayOfMonth = new Date(year, month, 1);
@@ -528,7 +524,7 @@
             renderCalendar(currentMonth, currentYear);
         }
 
-        // --- Alarms Management Functions ---
+ 
 
         function addAlarm() {
             const name = document.getElementById("newAlarmName").value.trim();
@@ -642,12 +638,9 @@
             }
         }
 
-        // Función para activar la secuencia de la hora mágica manualmente
-// Función para activar la secuencia de la hora mágica manualmente
-// Función para activar la secuencia de la hora mágica manualmente
+      
 function triggerMagicHour() {
-    // Si la hora mágica ya está activa, no hacemos nada para evitar duplicados.
-    // Comprobamos la clase principal de shake y si el banner ya está visible.
+  
     if (document.body.classList.contains('shake-strong') || bannerEl.classList.contains('show')) {
         console.log("La hora mágica ya está activa. Espera a que termine para probarla de nuevo.");
         return;
@@ -655,20 +648,16 @@ function triggerMagicHour() {
 
     console.log("Activando secuencia de Hora Mágica manualmente: Shake inicial de 5s, luego efectos por 10s.");
 
-    const initialShakeDuration = 500; //
-    const effectsDuration = 10000; // 10 segundos para los demás efectos
+    const initialShakeDuration = 500;
+    const effectsDuration = 10000;
 
-    // 1. Activa el shake fuerte inmediatamente
     document.body.classList.add('shake-strong');
 
-    // 2. Temporizador para detener el shake después de 5 segundos y lanzar los otros efectos
     setTimeout(() => {
-        // Quita la clase de shake después de los 5 segundos
         document.body.classList.remove('shake-strong');
-        document.body.classList.remove('shake-medium'); // Asegúrate de quitar todas las clases de shake
+        document.body.classList.remove('shake-medium');
         document.body.classList.remove('shake-light');
 
-        // Lanza todos los efectos visuales (mensaje, banner, confeti, fuegos artificiales, party popper)
         messageEl.classList.add('show');
         showBanner(currentCustomBannerText);
         launchConfetti();
@@ -677,35 +666,27 @@ function triggerMagicHour() {
             launchPartyPoppers(partyPopperImageBase64);
         }
 
-        // 3. Temporizador para limpiar todos los efectos después de su duración (10 segundos)
         setTimeout(() => {
             messageEl.classList.remove('show');
             bannerEl.classList.remove('show');
-            
-            // Asegúrate de que el canvas de fuegos artificiales se limpie y oculte
             const canvas = document.getElementById("fireworksCanvas");
             if (canvas) {
                 canvas.style.display = "none";
                 const ctx = canvas.getContext("2d");
                 if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
             }
-
-            // Quita las imágenes de party popper si aún existen (aunque ya tienen su animación de fade)
             const allPartyPopperImages = document.querySelectorAll('.party-popper-image');
             allPartyPopperImages.forEach(img => img.remove());
-            
-            // Reinicia la bandera de confeti para permitir una nueva activación
             confettiActive = false;
-
-        }, effectsDuration); // Los efectos duran 10 segundos después de ser lanzados
-    }, initialShakeDuration); // El shake dura 5 segundos antes de lanzar los efectos
+        }, effectsDuration);
+    }, initialShakeDuration);
 }
 
         function deleteAlarm(id) {
             if (confirm("¿Estás seguro de que quieres eliminar esta Hora Mágica?")) {
                 const alarmIndex = alarms.findIndex(alarm => alarm.id === id);
                 if (alarmIndex > -1) {
-                    // Evitar eliminar la alarma predeterminada si su nombre y hora coinciden
+                    
                     const defaultAlarm = { name: "Hora de irse", hour: 13, minute: 39, second: 40 };
                     const isDefaultAlarm = (
                         alarms[alarmIndex].name === defaultAlarm.name &&
@@ -725,8 +706,7 @@ function triggerMagicHour() {
             }
         }
 
-        // --- Initial Load ---
-        // Se ejecuta cuando el DOM está completamente cargado
+     
         document.addEventListener('DOMContentLoaded', (event) => {
             loadBackgroundSetting();
             partyPopperToggle.checked = partyPopperEnabled;
